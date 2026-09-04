@@ -66,26 +66,26 @@ const sendErrorProd = (err, res) => {
 };
 
 const globalErrorHandler = (err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
+  let error = { ...err };
+  error.message = err.message;
+  error.name = err.name;
+  error.code = err.code;
+
+  // Handle specific MongoDB/Mongoose errors
+  if (error.name === 'CastError') error = handleCastErrorDB(error);
+  if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+  if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
+  
+  // Handle specific JWT errors
+  if (error.name === 'JsonWebTokenError') error = handleJWTError();
+  if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
+
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || 'error';
 
   if (env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(error, res);
   } else if (env.NODE_ENV === 'production') {
-    let error = { ...err };
-    error.message = err.message;
-    error.name = err.name;
-    error.code = err.code;
-
-    // Handle specific MongoDB/Mongoose errors
-    if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
-    
-    // Handle specific JWT errors
-    if (error.name === 'JsonWebTokenError') error = handleJWTError();
-    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
-
     sendErrorProd(error, res);
   }
 };
