@@ -21,10 +21,17 @@ router.get('/admin/all', adminMiddleware, validate(queryProductSchema, 'query'),
 router.get('/admin/stats', adminMiddleware, productController.getStats);
 router.get('/admin/:id', adminMiddleware, productController.getProductById);
 
+const { uploadSingle } = require('../../common/middleware/upload.middleware');
+const mediaController = require('../media/media.controller');
+
 // Admin Write routes
 router.post('/', adminMiddleware, validate(createProductSchema), productController.createProduct);
 router.patch('/:id', adminMiddleware, validate(updateProductSchema), productController.updateProduct);
 router.delete('/:id', adminMiddleware, productController.deleteProduct);
+
+// Product Image Management routes (Admin)
+router.post('/:productId/images', adminMiddleware, uploadSingle, mediaController.uploadToProduct);
+router.delete('/:productId/images/:imageId', adminMiddleware, mediaController.deleteFromProduct);
 
 // Status transition routes (Admin)
 router.post('/:id/publish', adminMiddleware, productController.publishProduct);

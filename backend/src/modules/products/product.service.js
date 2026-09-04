@@ -126,6 +126,8 @@ const updateProduct = async (id, data) => {
   return product;
 };
 
+const { deleteImage } = require('../../config/cloudinary');
+
 /**
  * Delete a product
  */
@@ -135,7 +137,16 @@ const deleteProduct = async (id) => {
     throw new AppError('Product not found', 404);
   }
 
-  // TODO: Phase 7 - Delete images from Cloudinary before deleting document
+  // Delete images from Cloudinary before deleting document
+  if (product.images && product.images.length > 0) {
+    for (const image of product.images) {
+      try {
+        await deleteImage(image.publicId);
+      } catch (err) {
+        console.error(`Failed to delete image ${image.publicId} from Cloudinary`, err);
+      }
+    }
+  }
   
   await product.deleteOne();
 };
