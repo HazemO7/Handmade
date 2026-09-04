@@ -10,7 +10,7 @@ const env = {
   PORT: parseInt(process.env.PORT, 10) || 5000,
 
   // Database
-  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/handmade-store',
+  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/handmade-store',
 
   // JWT
   JWT_SECRET: process.env.JWT_SECRET || 'dev-secret-change-in-production',

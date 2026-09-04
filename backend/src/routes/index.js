@@ -13,8 +13,9 @@ router.get('/health', (req, res) => {
   });
 });
 
-// --------------- Module Routes (Placeholders) ---------------
-// router.use('/auth', authRoutes);
+// --------------- Module Routes ---------------
+const authRoutes = require('../modules/auth/auth.routes');
+router.use('/auth', authRoutes);
 // router.use('/products', productRoutes);
 // router.use('/categories', categoryRoutes);
 // router.use('/media', mediaRoutes);
