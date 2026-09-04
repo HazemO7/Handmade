@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');
+const slugify = require('../../common/utils/slugify');
 
 const imageSchema = new mongoose.Schema(
   {
@@ -157,11 +157,7 @@ productSchema.index({ name: 'text', tags: 'text', description: 'text' });
 // Slug auto-generation
 productSchema.pre('validate', async function () {
   if (this.isModified('name') || !this.slug) {
-    let baseSlug = slugify(this.name, {
-      lower: true,
-      strict: false,
-      trim: true,
-    });
+    let baseSlug = slugify(this.name);
 
     if (!baseSlug) {
       baseSlug = 'product';

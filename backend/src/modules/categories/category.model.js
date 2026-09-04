@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');
+const slugify = require('../../common/utils/slugify');
 
 const categorySchema = new mongoose.Schema(
   {
@@ -66,11 +66,7 @@ categorySchema.index({ sortOrder: 1 });
 // Slug auto-generation hook
 categorySchema.pre('validate', async function () {
   if (this.isModified('name') || !this.slug) {
-    let baseSlug = slugify(this.name, {
-      lower: true,
-      strict: false,
-      trim: true,
-    });
+    let baseSlug = slugify(this.name);
 
     if (!baseSlug) {
       baseSlug = 'category';
