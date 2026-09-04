@@ -14,11 +14,13 @@ router.get('/health', (req, res) => {
 });
 
 const categoryRoutes = require('../modules/categories/category.routes');
+const productRoutes = require('../modules/products/product.routes');
 
 // --------------- Module Routes ---------------
 const authRoutes = require('../modules/auth/auth.routes');
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
+router.use('/products', productRoutes);
 // router.use('/media', mediaRoutes);
 // --------------- Test Route (Development only) ---------------
 if (env.NODE_ENV === 'development') {
