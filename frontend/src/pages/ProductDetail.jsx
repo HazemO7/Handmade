@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { productApi } from '../services/api';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import WhatsAppButton from '../components/product/WhatsAppButton';
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -54,7 +55,6 @@ const ProductDetail = () => {
 
   // Fallback image handling
   const displayImage = selectedImage || 'https://via.placeholder.com/800x1000?text=No+Image';
-  const whatsappUrl = `https://wa.me/?text=Hi, I'm interested in the product: ${product.name} - ${window.location.href}`;
 
   return (
     <div className="bg-warm-50 min-h-screen py-12">
@@ -157,21 +157,9 @@ const ProductDetail = () => {
                   )}
                 </p>
                 
-                <a 
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full"
-                >
-                  <Button 
-                    size="lg" 
-                    fullWidth 
-                    className="bg-green-600 hover:bg-green-700 focus:ring-green-600 border-none"
-                    disabled={product.stock === 0}
-                  >
-                    Order via WhatsApp
-                  </Button>
-                </a>
+                <div className="w-full">
+                  <WhatsAppButton product={product} />
+                </div>
               </div>
               
               {/* Detailed Description */}

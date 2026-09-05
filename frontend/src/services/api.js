@@ -96,7 +96,8 @@ export const aiApi = {
 };
 
 export const settingsApi = {
-  getSettings: () => api.get('/settings'), // Assuming a public settings endpoint exists
+  getSettings: () => api.get('/settings'),
+  updateSettings: (data) => api.patch('/settings', data),
 };
 
 export default api;

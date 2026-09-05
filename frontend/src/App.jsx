@@ -17,6 +17,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import CategoryManager from './pages/admin/CategoryManager';
 import ProductManager from './pages/admin/ProductManager';
 import AddProductPage from './pages/admin/AddProductPage';
+import SettingsPage from './pages/admin/SettingsPage';
 
 // Admin Pages placeholders (to be done in later tasks)
 function PlaceholderPage({ title }) {
@@ -77,7 +78,7 @@ const App = () => {
           <Route path="categories" element={<CategoryManager />} />
           <Route path="products" element={<ProductManager />} />
           <Route path="products/new" element={<AddProductPage />} />
-          <Route path="settings" element={<PlaceholderPage title="Settings" />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="media" element={<PlaceholderPage title="Media" />} />
         </Route>
 
