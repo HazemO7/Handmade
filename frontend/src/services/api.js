@@ -51,6 +51,14 @@ export const productApi = {
   createProduct: (data) => api.post('/products', data),
   updateProduct: (id, data) => api.patch(`/products/${id}`, data),
   deleteProduct: (id) => api.delete(`/products/${id}`),
+  uploadImage: (id, file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post(`/products/${id}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  deleteImage: (id, imageId) => api.delete(`/products/${id}/images/${imageId}`),
 };
 
 export const authApi = {
@@ -64,6 +72,27 @@ export const categoryApi = {
   createCategory: (data) => api.post('/categories', data),
   updateCategory: (id, data) => api.patch(`/categories/${id}`, data),
   deleteCategory: (id) => api.delete(`/categories/${id}`),
+};
+
+export const mediaApi = {
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/media/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  deleteImage: (publicId) => api.delete('/media', { data: { publicId } }),
+};
+
+export const aiApi = {
+  processImage: (data) => api.post('/ai/image-process', data),
+  generateContent: (data) => api.post('/ai/content-generate', data),
+  getJobStatus: (jobId) => api.get(`/ai/jobs/${jobId}`),
+  retryJob: (jobId) => api.post(`/ai/jobs/${jobId}/retry`),
+  applyContent: (jobId) => api.post(`/ai/jobs/${jobId}/apply`),
 };
 
 export const settingsApi = {
