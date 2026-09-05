@@ -16,6 +16,7 @@ router.get('/health', (req, res) => {
 const categoryRoutes = require('../modules/categories/category.routes');
 const productRoutes = require('../modules/products/product.routes');
 const mediaRoutes = require('../modules/media/media.routes');
+const aiRoutes = require('../modules/ai/ai.routes');
 
 // --------------- Module Routes ---------------
 const authRoutes = require('../modules/auth/auth.routes');
@@ -23,6 +24,7 @@ router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/products', productRoutes);
 router.use('/media', mediaRoutes);
+router.use('/ai', aiRoutes);
 
 // --------------- Test Route (Development only) ---------------
 if (env.NODE_ENV === 'development') {
