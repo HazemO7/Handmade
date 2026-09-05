@@ -25,7 +25,14 @@ const authLimiter = createLimiter({
   message: 'Too many login attempts from this IP, please try again after 15 minutes.',
 });
 
+const aiLimiter = createLimiter({
+  windowMs: 15 * 60 * 1000, 
+  max: 10,
+  message: 'Too many AI requests from this IP, please try again after 15 minutes.',
+});
+
 module.exports = {
   createLimiter,
   authLimiter,
+  aiLimiter,
 };

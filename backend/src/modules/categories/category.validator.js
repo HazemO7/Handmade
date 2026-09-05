@@ -27,8 +27,17 @@ const reorderCategorySchema = Joi.object({
   }),
 });
 
+const objectId = Joi.string().regex(/^[0-9a-fA-F]{24}$/).messages({
+  'string.pattern.base': 'Invalid ID format',
+});
+
+const idSchema = Joi.object({
+  id: objectId.required(),
+});
+
 module.exports = {
   createCategorySchema,
   updateCategorySchema,
   reorderCategorySchema,
+  idSchema,
 };

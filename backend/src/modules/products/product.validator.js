@@ -59,8 +59,24 @@ const queryProductSchema = Joi.object({
   sort: Joi.string().optional(),
 });
 
+const idSchema = Joi.object({
+  id: objectId.required(),
+});
+
+const slugSchema = Joi.object({
+  slug: Joi.string().required(),
+});
+
+const deleteImageSchema = Joi.object({
+  productId: objectId.required(),
+  imageId: objectId.required(),
+});
+
 module.exports = {
   createProductSchema,
   updateProductSchema,
   queryProductSchema,
+  idSchema,
+  slugSchema,
+  deleteImageSchema,
 };
