@@ -13,8 +13,10 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    // We don't have customer auth in this app (only admin),
-    // but if we did, we'd attach the token here.
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -22,9 +24,16 @@ api.interceptors.request.use(
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => response.data, // Strip axios wrapper, return our API standard response
+  (response) => response.data,
   (error) => {
-    // Format error to match our API standard AppError format
+    if (error.response?.status === 401) {
+      // Clear token and trigger logout if unauthorized
+      localStorage.removeItem('token');
+      // A full reload or custom event would be better here, but this handles it basically.
+      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+        window.location.href = '/admin/login';
+      }
+    }
     const formattedError = error.response?.data || {
       status: 'error',
       error: { message: error.message || 'Network Error' }
@@ -36,10 +45,25 @@ api.interceptors.response.use(
 export const productApi = {
   getProducts: (params) => api.get('/products', { params }),
   getProductBySlug: (slug) => api.get(`/products/${slug}`),
+  
+  // Admin endpoints
+  getAdminProducts: (params) => api.get('/products/admin/all', { params }),
+  createProduct: (data) => api.post('/products', data),
+  updateProduct: (id, data) => api.patch(`/products/${id}`, data),
+  deleteProduct: (id) => api.delete(`/products/${id}`),
+};
+
+export const authApi = {
+  login: (credentials) => api.post('/auth/login', credentials),
+  getMe: () => api.get('/auth/me'),
+  logout: () => api.post('/auth/logout'),
 };
 
 export const categoryApi = {
   getCategories: () => api.get('/categories'),
+  createCategory: (data) => api.post('/categories', data),
+  updateCategory: (id, data) => api.patch(`/categories/${id}`, data),
+  deleteCategory: (id) => api.delete(`/categories/${id}`),
 };
 
 export const settingsApi = {

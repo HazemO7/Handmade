@@ -6,11 +6,15 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import './styles/index.css';
 
+import { AuthProvider } from './context/AuthContext';
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
       <BrowserRouter>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
         <Toaster
           position="top-right"
           toastOptions={{
