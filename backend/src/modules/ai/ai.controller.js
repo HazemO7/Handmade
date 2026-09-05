@@ -39,8 +39,36 @@ const retryJob = asyncHandler(async (req, res) => {
   sendSuccess(res, job, 202);
 });
 
+/**
+ * @desc    Start an AI content generation job
+ * @route   POST /api/ai/content-generate
+ * @access  Private/Admin
+ */
+const generateContent = asyncHandler(async (req, res) => {
+  const { productId, productBasicInfo } = req.body;
+
+  if (!productId || !productBasicInfo) {
+    throw new AppError('Missing required fields (productId, productBasicInfo)', 400);
+  }
+
+  const job = await aiService.createContentGenerationJob(productId, productBasicInfo);
+  sendSuccess(res, job, 202);
+});
+
+/**
+ * @desc    Apply generated AI content to product
+ * @route   POST /api/ai/jobs/:id/apply
+ * @access  Private/Admin
+ */
+const applyContent = asyncHandler(async (req, res) => {
+  const result = await aiService.applyContentJob(req.params.id);
+  sendSuccess(res, result);
+});
+
 module.exports = {
   processImage,
   getJobStatus,
   retryJob,
+  generateContent,
+  applyContent,
 };

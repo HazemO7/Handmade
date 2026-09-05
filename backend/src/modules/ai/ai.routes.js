@@ -9,7 +9,10 @@ router.use(protect);
 router.use(restrictToAdmin);
 
 router.post('/image-process', aiController.processImage);
+router.post('/content-generate', aiController.generateContent);
+
 router.get('/jobs/:id', aiController.getJobStatus);
 router.post('/jobs/:id/retry', aiController.retryJob);
+router.post('/jobs/:id/apply', aiController.applyContent);
 
 module.exports = router;

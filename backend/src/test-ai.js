@@ -8,6 +8,7 @@ const Product = require('./modules/products/product.model');
 const AIJob = require('./modules/ai/aiJob.model');
 const BrandSettings = require('./modules/settings/settings.model');
 const imageProcessor = require('./modules/ai/imageProcessor.service');
+const contentGenerator = require('./modules/ai/contentGenerator.service');
 const { generateToken } = require('./modules/auth/auth.service');
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -28,13 +29,15 @@ async function runAITests() {
     await AIJob.deleteMany({});
     await BrandSettings.deleteMany({});
     
+    const CategoryModel = require('./modules/categories/category.model');
+    await CategoryModel.deleteMany({ name: 'AI Category' });
+    
     // Setup Admin
     const admin = await User.create({ name: 'Admin', email: 'admin@ai.com', password: 'password', role: 'admin' });
     adminToken = generateToken(admin._id, admin.role);
 
     // Create a dummy Category via Mongoose just for product requirements (schema takes category)
-    const Category = require('./modules/categories/category.model');
-    const cat = await Category.create({ name: 'AI Category' });
+    const cat = await CategoryModel.create({ name: 'AI Category' });
 
     // Create Product with dummy image
     const prod = await Product.create({
@@ -140,7 +143,60 @@ async function runAITests() {
     }
     console.log('✅ Retry succeeded and job completed successfully.');
 
-    console.log('\n🎉 ALL PHASE 8 AI REQUIREMENTS VERIFIED SUCCESSFULLY! 🎉\n');
+    // --- TEST 3: Content Generation Job & Apply ---
+    console.log('\n[5/6] Testing async content generation...');
+    const contentStub = sinon.stub(contentGenerator, 'generateContent').resolves({
+      shortDescription: 'AI Short',
+      description: 'AI Full',
+      highlights: ['H1', 'H2'],
+      features: ['F1'],
+      tags: ['ai', 'test'],
+      seo: { title: 'AI Title', description: 'AI Desc' }
+    });
+
+    res = await request(app)
+      .post('/api/ai/content-generate')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        productId,
+        productBasicInfo: { name: 'AI Product', price: 100 }
+      });
+
+    if (res.statusCode !== 202 || res.body.data.status !== 'PENDING') {
+      throw new Error('Failed to create content job or status is not PENDING');
+    }
+    const contentJobId = res.body.data.id;
+    console.log('✅ Content job created with 202 and PENDING status.');
+
+    await wait(200); // Wait for background worker
+
+    res = await request(app)
+      .get(`/api/ai/jobs/${contentJobId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    if (res.body.data.status !== 'COMPLETED' || !res.body.data.result.shortDescription) {
+      throw new Error('Content job failed to complete or missing result data');
+    }
+    console.log('✅ Polling confirmed content generation COMPLETED.');
+
+    console.log('\n[6/6] Testing apply content to product...');
+    res = await request(app)
+      .post(`/api/ai/jobs/${contentJobId}/apply`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    if (res.statusCode !== 200) {
+      throw new Error(`Apply content failed: ${res.body.error?.message}`);
+    }
+
+    const finalProd = await Product.findById(productId);
+    if (finalProd.shortDescription !== 'AI Short' || finalProd.seo.title !== 'AI Title') {
+      throw new Error('Product was not updated with applied content');
+    }
+    console.log('✅ Content successfully applied to product.');
+
+    contentStub.restore();
+
+    console.log('\n🎉 ALL PHASE 9 CONTENT REQUIREMENTS VERIFIED SUCCESSFULLY! 🎉\n');
   } catch (error) {
     console.error('❌ Verification failed:', error);
     process.exit(1);
