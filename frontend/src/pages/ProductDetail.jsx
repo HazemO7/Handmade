@@ -4,6 +4,7 @@ import { productApi } from '../services/api';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import WhatsAppButton from '../components/product/WhatsAppButton';
+import SEO from '../components/common/SEO';
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -58,6 +59,13 @@ const ProductDetail = () => {
 
   return (
     <div className="bg-warm-50 min-h-screen py-12">
+      <SEO
+        title={product.seo?.title || product.name}
+        description={product.seo?.description || product.shortDescription || product.description?.slice(0, 150)}
+        image={displayImage}
+        type="product"
+        product={product}
+      />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb */}
@@ -85,7 +93,10 @@ const ProductDetail = () => {
               <div className="aspect-[4/5] rounded-xl overflow-hidden bg-warm-100 mb-4">
                 <img 
                   src={displayImage} 
-                  alt={product.name}
+                  alt={`${product.name} — Handcrafted ${product.category?.name || 'Item'}`}
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover object-center"
                 />
               </div>
@@ -93,17 +104,25 @@ const ProductDetail = () => {
               {/* Thumbnails */}
               {product.images && product.images.length > 1 && (
                 <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-                  {product.images.map((img) => {
+                  {product.images.map((img, idx) => {
                     const imgUrl = img.processedUrl || img.originalUrl;
                     return (
                       <button
-                        key={img._id}
+                        key={img._id || idx}
                         onClick={() => setSelectedImage(imgUrl)}
                         className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-colors ${
                           selectedImage === imgUrl ? 'border-brand-600' : 'border-transparent opacity-70 hover:opacity-100'
                         }`}
                       >
-                        <img src={imgUrl} alt="thumbnail" className="w-full h-full object-cover" />
+                        <img
+                          src={imgUrl}
+                          alt={`${product.name} thumbnail ${idx + 1}`}
+                          loading="lazy"
+                          decoding="async"
+                          width="80"
+                          height="80"
+                          className="w-full h-full object-cover"
+                        />
                       </button>
                     );
                   })}

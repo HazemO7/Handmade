@@ -4,6 +4,7 @@ import { productApi, categoryApi } from '../services/api';
 import ProductCard from '../components/product/ProductCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import SEO from '../components/common/SEO';
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -42,6 +43,11 @@ const Home = () => {
 
   return (
     <div className="page-transition">
+      <SEO
+        title="Artisanal Handcrafted Items & Decor"
+        description="Explore one-of-a-kind handmade artisanal pieces, pottery, bags, and gifts crafted with natural materials and authentic passion."
+        keywords="handmade, artisanal, crafts, home decor, gifts, handcrafted"
+      />
       {/* Hero Section */}
       <section className="bg-brand-100 py-20 lg:py-32 relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

@@ -9,6 +9,7 @@ const asyncHandler = require('../../common/utils/asyncHandler');
  */
 const getAll = asyncHandler(async (req, res) => {
   const categories = await categoryService.getAllCategories();
+  res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
   sendSuccess(res, categories);
 });
 
@@ -19,6 +20,7 @@ const getAll = asyncHandler(async (req, res) => {
  */
 const getById = asyncHandler(async (req, res) => {
   const category = await categoryService.getCategoryById(req.params.id);
+  res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
   sendSuccess(res, category);
 });
 

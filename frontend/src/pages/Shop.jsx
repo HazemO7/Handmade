@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { productApi, categoryApi } from '../services/api';
 import ProductCard from '../components/product/ProductCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import SEO from '../components/common/SEO';
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,7 +49,7 @@ const Shop = () => {
         setProducts(res.data.products);
         setPagination(res.data.pagination);
       } catch (error) {
-        console.error('Failed to fetch products', error);
+        console.error('Failed to load products', error);
       } finally {
         setIsLoading(false);
       }
@@ -71,8 +72,18 @@ const Shop = () => {
     setSearchParams(newParams);
   };
 
+  // Dynamic SEO text
+  const currentCategory = categories.find((c) => c.slug === categoryFilter);
+  const seoTitle = currentCategory
+    ? `${currentCategory.name} Collection`
+    : searchFilter
+    ? `Search results for "${searchFilter}"`
+    : 'All Handcrafted Products';
+  const seoDesc = currentCategory?.description || 'Browse our complete catalog of unique handmade items.';
+
   return (
     <div className="bg-warm-50 min-h-screen py-12">
+      <SEO title={seoTitle} description={seoDesc} />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Page Header */}

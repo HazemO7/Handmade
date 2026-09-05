@@ -11,7 +11,11 @@ const ProductCard = ({ product }) => {
       <Link to={`/product/${slug}`} className="block relative aspect-[4/5] bg-warm-100 overflow-hidden">
         <img
           src={imageUrl}
-          alt={primaryImage?.alt || name}
+          alt={primaryImage?.alt || `${name} — Handmade ${category?.name || 'Artisanal Craft'}`}
+          loading="lazy"
+          decoding="async"
+          width="400"
+          height="500"
           className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

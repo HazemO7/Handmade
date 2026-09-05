@@ -13,6 +13,7 @@ const getProducts = asyncHandler(async (req, res) => {
   options.status = 'PUBLISHED';
 
   const result = await productService.getProducts(options);
+  res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
   sendPaginated(res, result.products, result.pagination);
 });
 
@@ -33,6 +34,7 @@ const getAdminProducts = asyncHandler(async (req, res) => {
  */
 const getProductBySlug = asyncHandler(async (req, res) => {
   const product = await productService.getProductBySlug(req.params.slug);
+  res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
   sendSuccess(res, product);
 });
 
