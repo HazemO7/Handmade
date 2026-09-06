@@ -8,6 +8,7 @@ import { FiZap } from 'react-icons/fi';
 
 const ImageProcessorCard = ({ product, image, onImageProcessed }) => {
   const [jobId, setJobId] = useState(null);
+  const [isStarting, setIsStarting] = useState(false);
   
   const { job, status, error, retryJob } = useAIJob(jobId, {
     onCompleted: (completedJob) => {
@@ -18,15 +19,33 @@ const ImageProcessorCard = ({ product, image, onImageProcessed }) => {
 
   const handleProcess = async () => {
     try {
+      setIsStarting(true);
+      const prodId = product?.id || product?._id;
+      const imgId = image?._id || image?.id;
+      const imgUrl = image?.originalUrl;
+      const pubId = image?.publicId || `img_${Date.now()}`;
+
       const res = await aiApi.processImage({
-        productId: product.id,
-        imageId: image._id,
-        imageUrl: image.originalUrl,
-        imagePublicId: image.publicId
+        productId: prodId,
+        imageId: imgId,
+        imageUrl: imgUrl,
+        imagePublicId: pubId
       });
-      setJobId(res.data.id);
+      
+      const newJobId = res.data?.id || res.data?._id;
+      if (newJobId) {
+        setJobId(newJobId);
+      }
+
+      // If already completed synchronously
+      if (res.data?.status === 'COMPLETED' && res.data?.result) {
+        onImageProcessed(res.data.result);
+        toast.success('Image enhanced successfully');
+      }
     } catch (err) {
       toast.error(err.error?.message || 'Failed to start AI processing');
+    } finally {
+      setIsStarting(false);
     }
   };
 
@@ -59,7 +78,7 @@ const ImageProcessorCard = ({ product, image, onImageProcessed }) => {
               <div className="text-center p-6 bg-warm-50 rounded-lg border border-warm-200 w-full h-full flex flex-col items-center justify-center">
                 <FiZap className="w-10 h-10 text-brand-400 mb-3" />
                 <p className="text-sm text-warm-600 mb-4">Remove background and apply brand styling.</p>
-                <Button onClick={handleProcess}>
+                <Button onClick={handleProcess} isLoading={isStarting}>
                   Enhance Image
                 </Button>
               </div>
@@ -79,11 +98,15 @@ const StepAIImageProcessing = ({ productData, setProductData, onNext, onBack }) 
   const images = productData?.images || [];
 
   const handleImageProcessed = (result) => {
-    if (!result || !result.imageUrl) return;
+    const targetUrl = result?.imageUrl || result?.processedUrl;
+    if (!targetUrl) return;
     
     const updatedImages = images.map(img => {
-      if (img._id === result.imageId) {
-        return { ...img, processedUrl: result.imageUrl };
+      const isMatch = (result.imageId && (img._id === result.imageId || img.id === result.imageId)) ||
+                      (img.originalUrl === result.originalUrl) ||
+                      (images.length === 1);
+      if (isMatch) {
+        return { ...img, processedUrl: targetUrl };
       }
       return img;
     });

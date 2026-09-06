@@ -31,7 +31,7 @@ const processImageJob = async (jobId) => {
     }
 
     job.status = 'COMPLETED';
-    job.result = { processedUrl };
+    job.result = { processedUrl, imageUrl: processedUrl, imageId };
     job.completedAt = new Date();
     await job.save();
 
@@ -102,8 +102,10 @@ const createImageProcessingJob = async (productId, imageId, imageUrl, imagePubli
     input: { imageId, imageUrl, imagePublicId },
   });
 
-  processImageJob(job._id).catch(err => console.error('Background job invocation failed:', err));
-  return job;
+  // Await in serverless runtime so Vercel doesn't freeze background execution
+  await processImageJob(job._id);
+  const updatedJob = await AIJob.findById(job._id);
+  return updatedJob || job;
 };
 
 /**
@@ -120,8 +122,10 @@ const createContentGenerationJob = async (productId, productBasicInfo) => {
     input: { productBasicInfo },
   });
 
-  processContentJob(job._id).catch(err => console.error('Background job invocation failed:', err));
-  return job;
+  // Await in serverless runtime so Vercel doesn't freeze background execution
+  await processContentJob(job._id);
+  const updatedJob = await AIJob.findById(job._id);
+  return updatedJob || job;
 };
 
 /**
