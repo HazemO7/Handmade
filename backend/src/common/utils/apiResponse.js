@@ -41,7 +41,10 @@ const sendError = (res, message, statusCode = 500) => {
 const sendPaginated = (res, data, pagination, statusCode = 200) => {
   res.status(statusCode).json({
     success: true,
-    data,
+    data: {
+      products: data,
+      pagination,
+    },
     pagination,
   });
 };

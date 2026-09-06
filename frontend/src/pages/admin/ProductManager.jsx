@@ -19,8 +19,10 @@ const ProductManager = () => {
     try {
       setIsLoading(true);
       const res = await productApi.getAdminProducts({ page, limit: 10, sort: '-createdAt' });
-      setProducts(res.data.products);
-      setPagination(res.data.pagination);
+      const productsList = Array.isArray(res.data) ? res.data : (res.data?.products || []);
+      const paginationData = res.pagination || res.data?.pagination || {};
+      setProducts(productsList);
+      setPagination(paginationData);
     } catch (error) {
       toast.error('Failed to load products');
     } finally {

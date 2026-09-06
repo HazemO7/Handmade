@@ -46,8 +46,10 @@ const Shop = () => {
         }
 
         const res = await productApi.getProducts(params);
-        setProducts(res.data.products);
-        setPagination(res.data.pagination);
+        const productsList = Array.isArray(res.data) ? res.data : (res.data?.products || []);
+        const paginationData = res.pagination || res.data?.pagination || {};
+        setProducts(productsList);
+        setPagination(paginationData);
       } catch (error) {
         console.error('Failed to load products', error);
       } finally {

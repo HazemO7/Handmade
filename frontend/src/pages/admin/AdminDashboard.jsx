@@ -19,11 +19,14 @@ const AdminDashboard = () => {
           categoryApi.getCategories()
         ]);
         
-        // We only get total from pagination metadata
+        const total = productsRes.pagination?.total || productsRes.data?.pagination?.total || 0;
+        const productsList = Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data?.products || []);
+        const categoriesList = Array.isArray(categoriesRes.data) ? categoriesRes.data : (categoriesRes.data?.categories || []);
+        
         setStats({
-          totalProducts: productsRes.data.pagination?.total || 0,
-          publishedProducts: productsRes.data.products?.filter(p => p.status === 'PUBLISHED').length || 0, // This is just a sample
-          totalCategories: categoriesRes.data?.length || 0,
+          totalProducts: total,
+          publishedProducts: productsList.filter(p => p.status === 'PUBLISHED').length,
+          totalCategories: categoriesList.length,
         });
       } catch (error) {
         console.error('Failed to load dashboard stats', error);

@@ -20,9 +20,15 @@ const Home = () => {
           categoryApi.getCategories()
         ]);
         
-        setFeaturedProducts(productsRes.data.products);
+        const products = Array.isArray(productsRes.data) 
+          ? productsRes.data 
+          : (productsRes.data?.products || []);
+        setFeaturedProducts(products);
         // Only take the top 3 categories for the home page layout
-        setCategories(categoriesRes.data.slice(0, 3));
+        const cats = Array.isArray(categoriesRes.data) 
+          ? categoriesRes.data 
+          : (categoriesRes.data?.categories || []);
+        setCategories(cats.slice(0, 3));
       } catch (error) {
         console.error('Failed to load home data', error);
       } finally {
