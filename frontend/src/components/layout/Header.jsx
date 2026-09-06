@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { FiMenu, FiX, FiShoppingCart, FiSearch } from 'react-icons/fi';
+import { FiMenu, FiX, FiShoppingCart, FiSearch, FiUser } from 'react-icons/fi';
 import Button from '../common/Button';
 
 const Header = () => {
@@ -44,19 +44,33 @@ const Header = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 text-warm-700 hover:text-brand-700 transition-colors">
+            <button className="p-2 text-warm-700 hover:text-brand-700 transition-colors" title="Search">
               <FiSearch className="h-5 w-5" />
             </button>
+            <Link 
+              to="/admin" 
+              className="p-2 text-warm-700 hover:text-brand-700 transition-colors" 
+              title="Admin Login"
+            >
+              <FiUser className="h-5 w-5" />
+            </Link>
             <Button variant="primary" size="sm" className="hidden lg:inline-flex">
               Contact on WhatsApp
             </Button>
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden items-center space-x-4">
-            <button className="p-2 text-warm-700 hover:text-brand-700 transition-colors">
+          <div className="flex md:hidden items-center space-x-3">
+            <button className="p-2 text-warm-700 hover:text-brand-700 transition-colors" title="Search">
               <FiSearch className="h-5 w-5" />
             </button>
+            <Link 
+              to="/admin" 
+              className="p-2 text-warm-700 hover:text-brand-700 transition-colors" 
+              title="Admin Login"
+            >
+              <FiUser className="h-5 w-5" />
+            </Link>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-warm-700 hover:text-brand-700 transition-colors focus:outline-none"

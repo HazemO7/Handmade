@@ -59,10 +59,13 @@ const Footer = () => {
           
         </div>
         
-        <div className="border-t border-warm-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-warm-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-warm-400">
             &copy; {new Date().getFullYear()} Handmade Store. All rights reserved.
           </p>
+          <Link to="/admin" className="text-xs text-warm-500 hover:text-warm-300 transition-colors">
+            Admin Portal
+          </Link>
         </div>
       </div>
     </footer>
