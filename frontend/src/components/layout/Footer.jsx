@@ -1,69 +1,73 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiInstagram, FiFacebook, FiTwitter } from 'react-icons/fi';
+import { FiInstagram, FiFacebook } from 'react-icons/fi';
 
 const Footer = () => {
   return (
-    <footer className="bg-warm-900 text-warm-100">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
-          
-          {/* Brand & About */}
-          <div className="col-span-1 md:col-span-1 lg:col-span-2">
-            <Link to="/" className="text-2xl font-heading font-bold text-brand-100 tracking-tight mb-4 inline-block">
-              Handmade Store
-            </Link>
-            <p className="text-warm-300 max-w-md text-sm leading-relaxed mb-6">
-              Curating the finest artisan-crafted goods for your home and lifestyle. 
-              Every piece tells a story of craftsmanship, dedication, and beauty.
+    <footer style={{ backgroundColor: '#292525', color: '#F7F1E8' }}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+
+          {/* Brand Column */}
+          <div className="md:col-span-1">
+            {/* Logo */}
+            <div className="mb-5">
+              <div className="font-heading font-semibold" style={{ fontSize: '32px', color: '#F7F1E8', lineHeight: 1 }}>
+                حَبّة
+              </div>
+              <div className="font-body tracking-[0.2em] uppercase" style={{ fontSize: '11px', color: '#C5A56A', marginTop: '3px' }}>
+                HABA
+              </div>
+            </div>
+            <p className="font-heading italic" style={{ fontSize: '17px', color: '#C98B91', lineHeight: 1.6, maxWidth: '260px' }}>
+              حَبّة ورا حَبّة،<br />حكاية بتتعمل.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-warm-400 hover:text-brand-300 transition-colors">
+            <p className="mt-3 text-sm" style={{ color: '#978572', lineHeight: 1.8 }}>
+              Made bead by bead.
+            </p>
+            {/* Social */}
+            <div className="flex space-x-4 mt-6">
+              <a href="#" className="transition-colors hover:opacity-70" style={{ color: '#978572' }}>
                 <span className="sr-only">Instagram</span>
                 <FiInstagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-warm-400 hover:text-brand-300 transition-colors">
+              <a href="#" className="transition-colors hover:opacity-70" style={{ color: '#978572' }}>
                 <span className="sr-only">Facebook</span>
                 <FiFacebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-warm-400 hover:text-brand-300 transition-colors">
-                <span className="sr-only">Twitter</span>
-                <FiTwitter className="h-5 w-5" />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Shop Links */}
           <div>
-            <h3 className="text-sm font-semibold tracking-wider uppercase text-warm-400 mb-4">
+            <h4 className="text-xs font-body font-semibold tracking-[0.15em] uppercase mb-5" style={{ color: '#C5A56A' }}>
               Shop
-            </h3>
+            </h4>
             <ul className="space-y-3">
-              <li><Link to="/shop" className="text-warm-200 hover:text-white transition-colors text-sm">All Products</Link></li>
-              <li><Link to="/categories" className="text-warm-200 hover:text-white transition-colors text-sm">Categories</Link></li>
-              <li><Link to="/new-arrivals" className="text-warm-200 hover:text-white transition-colors text-sm">New Arrivals</Link></li>
+              <li><Link to="/shop" className="text-sm transition-colors hover:opacity-80" style={{ color: '#c8bcaa' }}>All Products</Link></li>
+              <li><Link to="/categories" className="text-sm transition-colors hover:opacity-80" style={{ color: '#c8bcaa' }}>Collections</Link></li>
+              <li><Link to="/shop?sort=-createdAt" className="text-sm transition-colors hover:opacity-80" style={{ color: '#c8bcaa' }}>New Arrivals</Link></li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Info Links */}
           <div>
-            <h3 className="text-sm font-semibold tracking-wider uppercase text-warm-400 mb-4">
-              Support
-            </h3>
+            <h4 className="text-xs font-body font-semibold tracking-[0.15em] uppercase mb-5" style={{ color: '#C5A56A' }}>
+              Info
+            </h4>
             <ul className="space-y-3">
-              <li><Link to="/contact" className="text-warm-200 hover:text-white transition-colors text-sm">Contact Us</Link></li>
-              <li><Link to="/faq" className="text-warm-200 hover:text-white transition-colors text-sm">FAQ</Link></li>
-              <li><Link to="/shipping" className="text-warm-200 hover:text-white transition-colors text-sm">Shipping Policy</Link></li>
+              <li><Link to="/about" className="text-sm transition-colors hover:opacity-80" style={{ color: '#c8bcaa' }}>Our Story</Link></li>
+              <li><Link to="/contact" className="text-sm transition-colors hover:opacity-80" style={{ color: '#c8bcaa' }}>Contact</Link></li>
             </ul>
           </div>
-          
         </div>
-        
-        <div className="border-t border-warm-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-warm-400">
-            &copy; {new Date().getFullYear()} Handmade Store. All rights reserved.
+
+        {/* Bottom Bar */}
+        <div className="mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-3" style={{ borderTop: '1px solid #3d3939' }}>
+          <p className="text-xs" style={{ color: '#635751' }}>
+            &copy; {new Date().getFullYear()} HABA · حَبّة. All rights reserved.
           </p>
-          <Link to="/admin" className="text-xs text-warm-500 hover:text-warm-300 transition-colors">
+          <Link to="/admin" className="text-xs transition-colors hover:opacity-70" style={{ color: '#635751' }}>
             Admin Portal
           </Link>
         </div>

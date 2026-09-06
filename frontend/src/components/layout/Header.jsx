@@ -1,39 +1,48 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { FiMenu, FiX, FiShoppingCart, FiSearch, FiUser } from 'react-icons/fi';
-import Button from '../common/Button';
+import { FiMenu, FiX, FiUser } from 'react-icons/fi';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
     { name: 'Shop', path: '/shop' },
-    { name: 'Categories', path: '/categories' },
-    { name: 'About', path: '/about' },
+    { name: 'Collections', path: '/categories' },
+    { name: 'Our Story', path: '/about' },
   ];
 
   return (
-    <header className="bg-brand-50 border-b border-warm-200 sticky top-0 z-50">
+    <header className="bg-warm-50 border-b border-peach-200 sticky top-0 z-50" style={{ borderColor: '#E8C7B8' }}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          
+
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-2xl font-heading font-bold text-brand-800 tracking-tight">
-              Handmade Store
-            </Link>
-          </div>
+          <Link to="/" className="flex-shrink-0 flex flex-col items-start leading-none">
+            <span
+              className="font-heading font-semibold tracking-tight"
+              style={{ fontSize: '26px', color: '#542A3A', lineHeight: 1 }}
+            >
+              حَبّة
+            </span>
+            <span
+              className="font-body tracking-[0.18em] uppercase"
+              style={{ fontSize: '11px', color: '#C5A56A', letterSpacing: '0.18em', marginTop: '1px' }}
+            >
+              HABA
+            </span>
+          </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-10">
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
-                className={({ isActive }) => 
-                  `text-base font-medium transition-colors hover:text-brand-700 ${
-                    isActive ? 'text-brand-700 border-b-2 border-brand-700' : 'text-warm-700'
+                className={({ isActive }) =>
+                  `text-sm font-medium tracking-wider uppercase transition-colors ${
+                    isActive
+                      ? 'text-brand-700'
+                      : 'text-warm-700 hover:text-brand-700'
                   }`
                 }
               >
@@ -44,38 +53,25 @@ const Header = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="p-2 text-warm-700 hover:text-brand-700 transition-colors" title="Search">
-              <FiSearch className="h-5 w-5" />
-            </button>
-            <Link 
-              to="/admin" 
-              className="p-2 text-warm-700 hover:text-brand-700 transition-colors" 
-              title="Admin Login"
+            <Link
+              to="/admin"
+              className="p-2 text-warm-600 hover:text-brand-700 transition-colors"
+              title="Admin"
             >
-              <FiUser className="h-5 w-5" />
+              <FiUser className="h-4 w-4" />
             </Link>
-            <Button variant="primary" size="sm" className="hidden lg:inline-flex">
-              Contact on WhatsApp
-            </Button>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile Controls */}
           <div className="flex md:hidden items-center space-x-3">
-            <button className="p-2 text-warm-700 hover:text-brand-700 transition-colors" title="Search">
-              <FiSearch className="h-5 w-5" />
-            </button>
-            <Link 
-              to="/admin" 
-              className="p-2 text-warm-700 hover:text-brand-700 transition-colors" 
-              title="Admin Login"
-            >
-              <FiUser className="h-5 w-5" />
+            <Link to="/admin" className="p-2 text-warm-600 hover:text-brand-700 transition-colors">
+              <FiUser className="h-4 w-4" />
             </Link>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-warm-700 hover:text-brand-700 transition-colors focus:outline-none"
             >
-              {isMenuOpen ? <FiX className="h-6 w-6" /> : <FiMenu className="h-6 w-6" />}
+              {isMenuOpen ? <FiX className="h-5 w-5" /> : <FiMenu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -83,29 +79,25 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-brand-50 border-b border-warm-200">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden bg-warm-50 border-t" style={{ borderColor: '#E8C7B8' }}>
+          <div className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
-                  `block px-3 py-2 rounded-md text-base font-medium ${
-                    isActive 
-                      ? 'bg-brand-100 text-brand-800' 
-                      : 'text-warm-700 hover:bg-warm-100 hover:text-brand-800'
+                  `block px-3 py-3 text-sm font-medium tracking-wider uppercase border-b ${
+                    isActive
+                      ? 'text-brand-700 border-peach-300'
+                      : 'text-warm-700 hover:text-brand-700 border-transparent'
                   }`
                 }
+                style={{ borderColor: isMenuOpen ? '#E8C7B8' : 'transparent' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
               </NavLink>
             ))}
-            <div className="px-3 py-2">
-              <Button variant="primary" fullWidth size="sm">
-                Contact on WhatsApp
-              </Button>
-            </div>
           </div>
         </div>
       )}

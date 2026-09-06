@@ -1,56 +1,70 @@
 /* ============================================
-   Google Fonts Import (must be before Tailwind)
+   Google Fonts — Cormorant Garamond + DM Sans
    ============================================ */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
 @import "tailwindcss";
 
 /* ============================================
-   Custom Theme Configuration (Tailwind v4)
+   HABA Design Tokens (Tailwind v4)
    ============================================ */
 
 @theme {
-  /* Brand Colors — warm, handmade aesthetic */
-  --color-brand-50: #fdf8f4;
-  --color-brand-100: #f8ede3;
-  --color-brand-200: #f0d8c4;
-  --color-brand-300: #e5be9e;
-  --color-brand-400: #d4a574;
-  --color-brand-500: #c48b52;
-  --color-brand-600: #b07340;
-  --color-brand-700: #8b6f47;
-  --color-brand-800: #6b5a3e;
-  --color-brand-900: #4a3f2e;
-  --color-brand-950: #2d2518;
+  /* ---- HABA Brand Colors ---- */
 
-  /* Warm Neutrals */
-  --color-warm-50: #faf9f7;
-  --color-warm-100: #f5f3ef;
-  --color-warm-200: #e8e4dd;
-  --color-warm-300: #d5cfc4;
-  --color-warm-400: #b8b0a2;
-  --color-warm-500: #9a9182;
-  --color-warm-600: #7d7568;
-  --color-warm-700: #625c52;
+  /* Plum — Primary brand color */
+  --color-brand-50:  #f5eef1;
+  --color-brand-100: #e8d4db;
+  --color-brand-200: #d4aab8;
+  --color-brand-300: #be7f93;
+  --color-brand-400: #a85c76;
+  --color-brand-500: #7a3d54;
+  --color-brand-600: #6b3348;
+  --color-brand-700: #542A3A;
+  --color-brand-800: #3d1e2a;
+  --color-brand-900: #27121a;
+  --color-brand-950: #160a0f;
+
+  /* Dusty Rose — Secondary */
+  --color-rose-300: #dba9ae;
+  --color-rose-400: #c98b91;
+  --color-rose-500: #b87078;
+  --color-rose-600: #a0575f;
+
+  /* Soft Peach — Supporting */
+  --color-peach-100: #f7ede7;
+  --color-peach-200: #e8c7b8;
+  --color-peach-300: #d9a898;
+  --color-peach-400: #c98b7a;
+
+  /* Champagne Gold — Accent (use sparingly) */
+  --color-gold-400: #d4b87a;
+  --color-gold-500: #C5A56A;
+  --color-gold-600: #a88850;
+
+  /* Warm Charcoal — Text & dark surfaces */
+  --color-warm-50:  #F7F1E8;
+  --color-warm-100: #ede7db;
+  --color-warm-200: #ddd4c4;
+  --color-warm-300: #c8bcaa;
+  --color-warm-400: #b0a08e;
+  --color-warm-500: #978572;
+  --color-warm-600: #7d6d5e;
+  --color-warm-700: #635751;
   --color-warm-800: #4a4540;
-  --color-warm-900: #332f2b;
-
-  /* Accent */
-  --color-accent-500: #c97c5d;
-  --color-accent-600: #b36a4d;
+  --color-warm-900: #292525;
 
   /* Font families */
-  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
-  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --font-body:    "DM Sans", system-ui, -apple-system, sans-serif;
 }
-
 
 /* ============================================
    Base Styles
    ============================================ */
 body {
   font-family: var(--font-body);
-  color: var(--color-warm-800);
+  color: var(--color-warm-900);
   background-color: var(--color-warm-50);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -59,46 +73,52 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--color-warm-900);
+  letter-spacing: -0.01em;
 }
 
 /* ============================================
-   Custom Utilities
+   HABA Custom Utilities
    ============================================ */
 
-/* Smooth page transitions */
+/* Page transition — fade + gentle rise */
 .page-transition {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: habaFadeIn 0.35s ease-out;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes habaFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Premium hover effect for cards */
+/* Product card hover — slow zoom, whisper-light shadow */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 16px 32px rgba(41, 37, 37, 0.07);
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
+/* Image zoom for product cards */
+.img-zoom {
+  transition: transform 0.35s ease;
+}
+.img-zoom:hover {
+  transform: scale(1.04);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-warm-100);
+/* Thin divider with gold accent */
+.haba-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #C5A56A 40%, #C5A56A 60%, transparent);
+  opacity: 0.4;
+  margin: 2rem auto;
+  width: 80px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-warm-300);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-warm-400);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-warm-100); }
+::-webkit-scrollbar-thumb { background: var(--color-warm-300); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-warm-400); }
