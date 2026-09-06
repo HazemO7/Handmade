@@ -1,6 +1,5 @@
 const express = require('express');
 const helmet = require('helmet');
-const path = require('path');
 const corsMiddleware = require('./config/cors');
 const env = require('./config/env');
 const AppError = require('./common/errors/AppError');
@@ -42,19 +41,11 @@ const routes = require('./routes/index');
 // --------------- API Routes ---------------
 app.use('/api', routes);
 
-// --------------- Production: Serve Frontend ---------------
+// --------------- Health Check ---------------
 
-if (env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '..', '..', 'frontend', 'dist');
-  app.use(express.static(frontendPath));
-
-  // SPA fallback — send index.html for all non-API routes
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(frontendPath, 'index.html'));
-    }
-  });
-}
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Handmade Store API is running', environment: env.NODE_ENV });
+});
 
 // --------------- 404 Handler ---------------
 
