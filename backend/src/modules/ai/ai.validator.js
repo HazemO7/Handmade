@@ -15,8 +15,8 @@ const generateContentSchema = Joi.object({
   productId: objectId.required(),
   productBasicInfo: Joi.object({
     name: Joi.string().required(),
-    price: Joi.number().required(),
-    category: Joi.string().required(),
+    price: Joi.number().optional().default(0),
+    category: Joi.string().optional().default('Handmade'),
     materials: Joi.array().items(Joi.string()).optional(),
     tags: Joi.array().items(Joi.string()).optional()
   }).unknown(true).required()

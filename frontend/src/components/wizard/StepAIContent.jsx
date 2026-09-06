@@ -21,36 +21,60 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
     seoDescription: productData?.seo?.description || '',
   });
 
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const applyGeneratedData = (generated) => {
+    if (!generated) return;
+    setContent({
+      shortDescription: generated.shortDescription || '',
+      description: generated.description || '',
+      highlights: generated.highlights 
+        ? (Array.isArray(generated.highlights) ? generated.highlights.join('\n') : generated.highlights) 
+        : '',
+      tags: generated.tags 
+        ? (Array.isArray(generated.tags) ? generated.tags.join(', ') : generated.tags) 
+        : '',
+      seoTitle: generated.seo?.title || '',
+      seoDescription: generated.seo?.description || '',
+    });
+    setIsManualEdit(true);
+  };
+
   const { job, status, error, retryJob } = useAIJob(jobId, {
     onCompleted: (completedJob) => {
-      // Pre-fill local state with generated content
-      const generated = completedJob.result?.generatedContent || {};
-      setContent({
-        shortDescription: generated.shortDescription || '',
-        description: generated.description || '',
-        highlights: generated.highlights ? generated.highlights.join('\n') : '',
-        tags: generated.tags ? generated.tags.join(', ') : '',
-        seoTitle: generated.seo?.title || '',
-        seoDescription: generated.seo?.description || '',
-      });
-      setIsManualEdit(true); // Allow them to tweak it immediately
+      const generated = completedJob.result?.generatedContent || completedJob.result || {};
+      applyGeneratedData(generated);
       toast.success('Content generated successfully');
     }
   });
 
   const handleGenerate = async () => {
     try {
+      setIsGenerating(true);
+      const prodId = productData?.id || productData?._id;
       const res = await aiApi.generateContent({
-        productId: productData.id,
+        productId: prodId,
         productBasicInfo: {
-          name: productData.name,
-          category: productData.category?.name || productData.category,
-          materials: productData.materials
+          name: productData?.name || 'Handmade Product',
+          price: Number(productData?.price) || 0,
+          category: productData?.category?.name || productData?.category || 'Handmade',
+          materials: productData?.materials || []
         }
       });
-      setJobId(res.data.id);
+
+      const newJobId = res.data?.id || res.data?._id;
+      if (newJobId) setJobId(newJobId);
+
+      // If already completed synchronously
+      if (res.data?.status === 'COMPLETED' && res.data?.result) {
+        const generated = res.data.result.generatedContent || res.data.result;
+        applyGeneratedData(generated);
+        toast.success('Content generated successfully');
+      }
     } catch (err) {
       toast.error(err.error?.message || 'Failed to start AI generation');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -100,7 +124,7 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
             Our AI will write compelling marketing copy based on your product's name, category, and materials.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button onClick={handleGenerate} size="lg">
+            <Button onClick={handleGenerate} size="lg" isLoading={isGenerating}>
               <FiZap className="mr-2" /> Generate Content
             </Button>
             <Button variant="outline" size="lg" onClick={() => setIsManualEdit(true)}>
