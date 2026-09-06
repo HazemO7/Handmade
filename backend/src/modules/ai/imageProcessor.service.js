@@ -20,17 +20,23 @@ const processImage = async (imageUrl, brandSettings) => {
       Only change the background and lighting.
     `.trim();
 
-    console.log(`[AI Image Processor] Enhancing image presentation: ${imageUrl}`);
+    console.log(`[AI Image Processor] Generating AI background for: ${imageUrl}`);
     
-    // Cloudinary on-the-fly aesthetic enhancements: auto format, auto quality, subtle warmth
+    // Cloudinary Generative AI Background Replacement
     if (imageUrl && imageUrl.includes('cloudinary.com')) {
-      const enhancedUrl = imageUrl.replace('/upload/', '/upload/e_improve,q_auto,f_auto/');
+      // Concise background prompt tailored for HABA brand aesthetic
+      const bgPrompt = encodeURIComponent('warm ivory natural linen fabric surface with soft natural studio lighting');
+      const enhancedUrl = imageUrl.replace(
+        '/upload/',
+        `/upload/e_gen_background_replace:prompt_${bgPrompt},f_auto,q_auto/`
+      );
+      console.log(`[AI Image Processor] Transformed to AI background URL: ${enhancedUrl}`);
       return enhancedUrl;
     }
 
     // Otherwise simulate slight processing delay and return URL
     await new Promise(resolve => setTimeout(resolve, 1000));
-    return `${imageUrl}?enhanced=true&style=${encodeURIComponent(brandSettings?.visualStyle || 'haba_ivory')}`;
+    return `${imageUrl}?enhanced=true&style=haba_ivory`;
   } catch (error) {
     console.warn('AI Image Processing notice:', error.message);
     return imageUrl;
