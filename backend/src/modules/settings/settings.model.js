@@ -1,10 +1,61 @@
 const mongoose = require('mongoose');
 
-const defaultImageStyle = `HABA artisan product photography.
-Place the handcrafted piece on a clean Ivory (#F7F1E8) or warm beige linen surface.
-Soft natural sunlight from the side, with subtle realistic warm shadows.
-Clean, editorial aesthetic, boutique feeling, warm and feminine.
-IMPORTANT: The handcrafted product itself must remain 100% authentic and untouched. Preserve all beads, pearls, threads, stitches, colors, materials, and textures exactly as shown.`;
+const defaultImageStyle = `Use the uploaded image as the exact product reference.
+
+Create a premium e-commerce product photography image of this exact product.
+
+### PRODUCT PRESERVATION
+- Keep the product itself 100% faithful to the uploaded reference.
+- Do NOT redesign, reshape, recolor, simplify, or add/remove any part of the product.
+- Preserve the exact: Shape, Colors, Materials, Beads, Patterns, Details, Proportions, Texture, and Handmade imperfections.
+- The final product must clearly look like the same physical product photographed professionally, not a recreated or AI-designed version.
+
+### BRAND VISUAL IDENTITY
+The brand is a premium handmade accessories brand specializing in beaded necklaces, bags, pendants, bracelets, and other handmade beadwork.
+Build a consistent visual identity around the product.
+Use a warm, elegant, artistic, handmade aesthetic.
+The background must follow a consistent brand color palette across ALL product images.
+
+### COLOR SYSTEM
+Use a cohesive palette based on:
+- Warm off-white / ivory (#F7F1E8)
+- Soft beige
+- Light sand
+- Subtle warm earthy tones
+- Very soft muted accent colors
+The background should feel premium, warm, feminine, artistic, and handmade.
+Avoid: Pure white backgrounds, Strong saturated colors, Random colors, Heavy gradients, Visually distracting backgrounds.
+
+### CONSISTENCY RULE
+Every future product image generated using this prompt must feel like it belongs to the same brand photoshoot and the same visual identity.
+Maintain the same: Background color family, Color temperature, Lighting style, Shadow softness, Photography style, Visual mood, Minimalism, Composition language, Level of contrast, Premium handmade aesthetic.
+Even when the product itself has completely different colors, the environment and visual treatment must remain consistent.
+
+### PHOTOGRAPHY STYLE
+Create professional high-end product photography.
+- Soft diffused studio lighting
+- Natural soft shadows
+- Subtle depth
+- Clean composition
+- Premium editorial aesthetic
+- Realistic materials and textures
+- High detail
+- Sharp product focus
+- Slightly warm color temperature
+- Minimal styling
+- Sophisticated handmade-luxury feeling
+Use subtle natural props only when they enhance the composition, such as: Linen fabric, Ceramic objects, Natural wood, Small dried flowers, Neutral stones, Handmade paper. Props must remain secondary and never distract from the product.
+
+### COMPOSITION
+The product is the hero. Place the product naturally in the center or using a refined editorial composition. Leave enough negative space around the product.
+
+### BRAND RECOGNITION
+The brand should be recognizable through the consistent visual language, not by adding a logo to every image.
+Do NOT add: Fake logos, Random text, Watermarks, Typography, Product labels.
+
+### OUTPUT
+Generate a photorealistic, premium product photograph.
+DO NOT CHANGE THE PRODUCT. CHANGE ONLY THE PHOTOGRAPHY ENVIRONMENT AND VISUAL PRESENTATION.`;
 
 const defaultAiInstructions = `Write warm, simple, emotional, and elegant product copy tailored for HABA | حَبّة handmade artisanal items.
 Emphasize that every piece is made bead by bead with patience and dedication.
