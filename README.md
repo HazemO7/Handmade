@@ -214,8 +214,7 @@ npm run seed
 node src/seeds/seed.js "mongodb+srv://<user>:<pass>@cluster0.../handmade-store"
 ```
 
-* **Default Admin Email:** `admin@handmade.com`
-* **Default Admin Password:** `Password123!`
+> **Security Note:** The initial seed script creates an admin account using `ADMIN_EMAIL` and `ADMIN_PASSWORD` from your `.env` (or default fallback). Always update your credentials or set custom values before deploying to production.
 
 ### 4. Running the App
 

@@ -32,16 +32,17 @@ const seedDatabase = async () => {
 
     // 1. Seed Admin User
     console.log('Seeding Admin User...');
-    const adminEmail = 'admin@handmade.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@handmade.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Password123!';
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (!existingAdmin) {
       await User.create({
         name: 'Store Admin',
         email: adminEmail,
-        password: 'Password123!',
+        password: adminPassword,
         role: 'admin'
       });
-      console.log('Admin user created (admin@handmade.com / Password123!)');
+      console.log(`Admin user created: ${adminEmail}`);
     } else {
       console.log('Admin user already exists, skipping.');
     }
