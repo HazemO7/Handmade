@@ -34,6 +34,7 @@ uploads/
 data/
 *.db
 
-# Do not upload any markdown files
+# Do not upload internal markdown files, allow README.md
 *.md
 **/*.md
+!README.md
