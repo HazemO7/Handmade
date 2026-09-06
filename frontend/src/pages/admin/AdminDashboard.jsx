@@ -19,13 +19,15 @@ const AdminDashboard = () => {
           categoryApi.getCategories()
         ]);
         
-        const total = productsRes.pagination?.total || productsRes.data?.pagination?.total || 0;
-        const productsList = Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data?.products || []);
-        const categoriesList = Array.isArray(categoriesRes.data) ? categoriesRes.data : (categoriesRes.data?.categories || []);
+        const total = productsRes?.pagination?.total || productsRes?.data?.pagination?.total || 0;
+        const rawProducts = productsRes?.data?.products || productsRes?.data;
+        const productsList = Array.isArray(rawProducts) ? rawProducts : [];
+        const rawCats = categoriesRes?.data?.categories || categoriesRes?.data;
+        const categoriesList = Array.isArray(rawCats) ? rawCats : [];
         
         setStats({
-          totalProducts: total,
-          publishedProducts: productsList.filter(p => p.status === 'PUBLISHED').length,
+          totalProducts: total || productsList.length,
+          publishedProducts: productsList.filter(p => p && p.status === 'PUBLISHED').length,
           totalCategories: categoriesList.length,
         });
       } catch (error) {
