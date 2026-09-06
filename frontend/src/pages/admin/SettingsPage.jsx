@@ -16,6 +16,7 @@ const SettingsPage = () => {
     secondaryColor: '#D4A574',
     backgroundColor: '#FDF8F4',
     visualStyle: 'warm, minimal, elegant',
+    imageStyle: '',
     aiInstructions: '',
   });
 
@@ -32,13 +33,14 @@ const SettingsPage = () => {
       const res = await settingsApi.getSettings();
       if (res.data) {
         setFormData({
-          brandName: res.data.brandName || 'Handmade Store',
+          brandName: res.data.brandName || 'HABA | حَبّة',
           whatsappNumber: res.data.whatsappNumber || '',
           defaultCurrency: res.data.defaultCurrency || 'EGP',
-          primaryColor: res.data.primaryColor || '#8B6F47',
-          secondaryColor: res.data.secondaryColor || '#D4A574',
-          backgroundColor: res.data.backgroundColor || '#FDF8F4',
+          primaryColor: res.data.primaryColor || '#542A3A',
+          secondaryColor: res.data.secondaryColor || '#C98B91',
+          backgroundColor: res.data.backgroundColor || '#F7F1E8',
           visualStyle: res.data.visualStyle || 'warm, minimal, elegant',
+          imageStyle: res.data.imageStyle || '',
           aiInstructions: res.data.aiInstructions || '',
         });
       }
@@ -188,7 +190,20 @@ const SettingsPage = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-warm-700 mb-1">AI Prompt Custom Instructions</label>
+              <label className="block text-sm font-medium text-warm-700 mb-1">AI Photo Enhancement Prompt (Image Style)</label>
+              <textarea
+                name="imageStyle"
+                value={formData.imageStyle}
+                onChange={handleChange}
+                rows={4}
+                placeholder="Guidelines and prompt for AI when styling/enhancing product photos..."
+                className="w-full p-2.5 border border-warm-300 rounded-md focus:ring-brand-500 focus:border-brand-500 text-sm font-mono text-xs"
+              />
+              <p className="text-xs text-warm-500 mt-1">This prompt guides AI background styling while preserving the original product.</p>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-warm-700 mb-1">AI Copywriting Instructions (Content Generator)</label>
               <textarea
                 name="aiInstructions"
                 value={formData.aiInstructions}

@@ -1,22 +1,21 @@
 const mongoose = require('mongoose');
 
-const defaultImageStyle = `Create a premium handmade product photography style.
-Use a warm, minimal, elegant aesthetic.
-Use natural lighting.
-Use a soft neutral background.
-Use subtle realistic shadows.
-The actual product must remain unchanged.
-Do not modify its shape, color, material, texture, or design.`;
+const defaultImageStyle = `HABA artisan product photography.
+Place the handcrafted piece on a clean Ivory (#F7F1E8) or warm beige linen surface.
+Soft natural sunlight from the side, with subtle realistic warm shadows.
+Clean, editorial aesthetic, boutique feeling, warm and feminine.
+IMPORTANT: The handcrafted product itself must remain 100% authentic and untouched. Preserve all beads, pearls, threads, stitches, colors, materials, and textures exactly as shown.`;
 
-const defaultAiInstructions = `Write warm, engaging, and professional product copy tailored for handmade and artisanal items.
-Highlight craftsmanship, quality, and aesthetic appeal without inventing unsupported technical facts.`;
+const defaultAiInstructions = `Write warm, simple, emotional, and elegant product copy tailored for HABA | حَبّة handmade artisanal items.
+Emphasize that every piece is made bead by bead with patience and dedication.
+Highlight craftsmanship, quality, and unique aesthetic without sounding corporate or salesy.`;
 
 const brandSettingsSchema = new mongoose.Schema(
   {
     brandName: {
       type: String,
       trim: true,
-      default: 'Handmade Store',
+      default: 'HABA | حَبّة',
     },
     logo: {
       type: String,
@@ -28,17 +27,17 @@ const brandSettingsSchema = new mongoose.Schema(
     },
     primaryColor: {
       type: String,
-      default: '#8B6F47',
+      default: '#542A3A',
       match: [/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Please provide a valid hex color code'],
     },
     secondaryColor: {
       type: String,
-      default: '#D4A574',
+      default: '#C98B91',
       match: [/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Please provide a valid hex color code'],
     },
     backgroundColor: {
       type: String,
-      default: '#FDF8F4',
+      default: '#F7F1E8',
       match: [/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Please provide a valid hex color code'],
     },
     fontPreference: {
