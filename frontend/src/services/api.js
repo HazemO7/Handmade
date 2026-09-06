@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 // The backend runs on port 5000 in dev
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+let rawApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').trim().replace(/\/+$/, '');
+if (!rawApiUrl.endsWith('/api')) {
+  rawApiUrl = `${rawApiUrl}/api`;
+}
+const API_URL = rawApiUrl;
 
 const api = axios.create({
   baseURL: API_URL,
