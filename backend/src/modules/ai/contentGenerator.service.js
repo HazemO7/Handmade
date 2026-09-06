@@ -33,50 +33,82 @@ const generateContent = async (productBasicInfo, brandSettings) => {
       }
     `.trim();
 
-    // If no real API key is provided, simulate processing
+    // If no real API key is provided or mock mode
     if (!env.AI_API_KEY || env.AI_API_KEY === 'mock_api_key' || env.NODE_ENV === 'test') {
       console.log(`[AI Mock] Generating content for product: ${productBasicInfo.name}`);
-      
-      // Simulate network/processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      return {
-        shortDescription: `Beautiful handmade ${productBasicInfo.name}.`,
-        description: `This is a meticulously crafted ${productBasicInfo.name}. It embodies our warm, minimal, elegant aesthetic.`,
-        highlights: ['Handmade with love', 'Premium quality', 'Unique design'],
-        features: productBasicInfo.features?.length ? productBasicInfo.features : ['Durable material', 'Ethically sourced'],
-        tags: [productBasicInfo.name.toLowerCase().replace(/\s+/g, '-'), 'handmade', 'artisan'],
-        seo: {
-          title: `Buy ${productBasicInfo.name} | ${brandSettings.brandName || 'Handmade Store'}`,
-          description: `Shop the handmade ${productBasicInfo.name}. Premium quality and artisan design.`
-        }
-      };
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return getFallbackContent(productBasicInfo, brandSettings);
     }
 
-    // --- REAL IMPLEMENTATION EXAMPLE (Using OpenAI SDK) ---
-    /*
-    const OpenAI = require('openai');
-    const openai = new OpenAI({ apiKey: env.AI_API_KEY });
-    
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: "You are an expert e-commerce copywriter specializing in artisan handmade goods. Output valid JSON only." },
-        { role: "user", content: prompt }
-      ]
-    });
-    
-    return JSON.parse(response.choices[0].message.content);
-    */
+    // Check if it's an OpenAI key (sk-...)
+    if (env.AI_API_KEY.startsWith('sk-')) {
+      try {
+        const OpenAI = require('openai');
+        const openai = new OpenAI({ apiKey: env.AI_API_KEY });
+        const response = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: 'You are an expert e-commerce copywriter specializing in artisan handmade goods. Output valid JSON only.' },
+            { role: 'user', content: prompt }
+          ]
+        });
+        return JSON.parse(response.choices[0].message.content);
+      } catch (err) {
+        console.warn('OpenAI call failed, falling back to template:', err.message);
+        return getFallbackContent(productBasicInfo, brandSettings);
+      }
+    }
 
-    throw new AppError('Real AI processing requires a valid provider SDK setup', 501);
+    // Otherwise, treat as Google Gemini API key
+    try {
+      console.log(`[Gemini AI] Generating content for ${productBasicInfo.name}...`);
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${env.AI_API_KEY}`;
+      const response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: 'application/json'
+          }
+        })
+      });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.warn(`[Gemini AI] Request failed (${response.status}): ${errorText}`);
+        return getFallbackContent(productBasicInfo, brandSettings);
+      }
+
+      const result = await response.json();
+      const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (rawText) {
+        return JSON.parse(rawText);
+      }
+    } catch (geminiErr) {
+      console.warn('[Gemini AI] Generation error:', geminiErr.message);
+      return getFallbackContent(productBasicInfo, brandSettings);
+    }
+
+    return getFallbackContent(productBasicInfo, brandSettings);
   } catch (error) {
     console.error('AI Content Generation Failed:', error);
-    throw new AppError(error.message || 'AI Content generation failed', 500);
+    return getFallbackContent(productBasicInfo, brandSettings);
   }
 };
+
+const getFallbackContent = (productBasicInfo, brandSettings = {}) => ({
+  shortDescription: `Beautiful handmade ${productBasicInfo.name}.`,
+  description: `This is a meticulously crafted ${productBasicInfo.name}. It embodies our warm, minimal, elegant aesthetic.`,
+  highlights: ['Handmade with love', 'Premium quality', 'Unique design'],
+  features: productBasicInfo.features?.length ? productBasicInfo.features : ['Durable material', 'Ethically sourced'],
+  tags: [productBasicInfo.name.toLowerCase().replace(/\s+/g, '-'), 'handmade', 'artisan'],
+  seo: {
+    title: `Buy ${productBasicInfo.name} | ${brandSettings.brandName || 'HABA | حَبّة'}`,
+    description: `Shop the handmade ${productBasicInfo.name}. Premium quality and artisan design.`
+  }
+});
 
 module.exports = {
   generateContent,
