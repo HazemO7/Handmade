@@ -56,100 +56,158 @@ const Home = () => {
       {/* ── Hero ── */}
       <section
         className="relative overflow-hidden"
-        style={{ backgroundColor: '#F7F1E8', minHeight: '88vh', display: 'flex', alignItems: 'center' }}
+        style={{ backgroundColor: '#F7F1E8', minHeight: '92vh' }}
       >
-        {/* Subtle bead pattern decoration */}
-        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+        <div className="flex flex-col lg:flex-row min-h-[92vh]">
+          {/* ── Left: Text Content ── */}
           <div
-            className="absolute"
-            style={{
-              right: '-80px', top: '50%', transform: 'translateY(-50%)',
-              width: '520px', height: '520px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, #E8C7B8 0%, transparent 70%)',
-              opacity: 0.45
-            }}
-          />
-          <div
-            className="absolute"
-            style={{
-              left: '-60px', bottom: '-40px',
-              width: '280px', height: '280px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, #C98B91 0%, transparent 70%)',
-              opacity: 0.15
-            }}
-          />
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-24 lg:py-32">
-          <div className="max-w-2xl">
-            {/* Arabic hero line */}
-            <p
-              className="font-heading font-medium"
-              style={{ fontSize: 'clamp(18px, 3vw, 22px)', color: '#C98B91', marginBottom: '16px', letterSpacing: '0.02em' }}
-              dir="rtl"
-            >
-              حَبّة ورا حَبّة، حكاية بتتعمل.
-            </p>
-
-            {/* English headline */}
-            <h1
-              className="font-heading"
-              style={{
-                fontSize: 'clamp(40px, 7vw, 80px)',
-                color: '#292525',
-                lineHeight: 1.1,
-                fontWeight: 400,
-                marginBottom: '24px',
-              }}
-            >
-              Made bead<br />
-              <span style={{ fontStyle: 'italic', color: '#542A3A' }}>by bead.</span>
-            </h1>
-
-            <p
-              className="font-body"
-              style={{ fontSize: '16px', color: '#635751', lineHeight: 1.8, maxWidth: '440px', marginBottom: '40px' }}
-            >
-              Handmade bags, necklaces & little pieces made with patience,<br className="hidden sm:block" /> detail and love.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to="/shop"
-                className="inline-flex items-center justify-center font-body font-medium tracking-widest uppercase transition-all"
+            className="relative z-10 flex items-center"
+            style={{ flex: '1 1 50%' }}
+          >
+            {/* Subtle decorative gradient */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+              <div
+                className="absolute"
                 style={{
-                  backgroundColor: '#542A3A',
-                  color: '#F7F1E8',
-                  padding: '14px 32px',
-                  fontSize: '12px',
-                  letterSpacing: '0.15em',
-                  borderRadius: '3px',
+                  left: '-60px', bottom: '-40px',
+                  width: '280px', height: '280px',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, #C98B91 0%, transparent 70%)',
+                  opacity: 0.12
                 }}
-                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#3d1e2a'}
-                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#542A3A'}
-              >
-                Shop the Collection →
-              </Link>
-              <Link
-                to="/about"
-                className="inline-flex items-center justify-center font-body font-medium tracking-widest uppercase transition-all"
-                style={{
-                  border: '1px solid #542A3A',
-                  color: '#542A3A',
-                  padding: '14px 32px',
-                  fontSize: '12px',
-                  letterSpacing: '0.15em',
-                  borderRadius: '3px',
-                  backgroundColor: 'transparent',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#542A3A'; e.currentTarget.style.color = '#F7F1E8'; }}
-                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#542A3A'; }}
-              >
-                Our Story
-              </Link>
+              />
             </div>
+
+            <div className="relative z-10 px-6 sm:px-10 lg:px-16 xl:px-24 py-20 lg:py-32 w-full">
+              {/* Arabic hero tagline — same visual weight as English */}
+              <h2
+                className="font-heading font-medium"
+                style={{
+                  fontSize: 'clamp(32px, 5.5vw, 56px)',
+                  color: '#C98B91',
+                  lineHeight: 1.3,
+                  marginBottom: '20px',
+                  letterSpacing: '0.01em',
+                }}
+                dir="rtl"
+              >
+                حَبّة ورا حَبّة،
+                <br />
+                <span style={{ color: '#542A3A' }}>حكاية بتتعمل.</span>
+              </h2>
+
+              {/* English headline */}
+              <h1
+                className="font-heading"
+                style={{
+                  fontSize: 'clamp(38px, 6vw, 72px)',
+                  color: '#292525',
+                  lineHeight: 1.1,
+                  fontWeight: 400,
+                  marginBottom: '24px',
+                }}
+              >
+                Made bead<br />
+                <span style={{ fontStyle: 'italic', color: '#542A3A' }}>by bead.</span>
+              </h1>
+
+              <p
+                className="font-body"
+                style={{
+                  fontSize: 'clamp(14px, 1.5vw, 17px)',
+                  color: '#635751',
+                  lineHeight: 1.8,
+                  maxWidth: '440px',
+                  marginBottom: '40px',
+                }}
+              >
+                Handmade bags, necklaces & little pieces made with patience,
+                <br className="hidden sm:block" /> detail and love.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/shop"
+                  className="inline-flex items-center justify-center font-body font-medium tracking-widest uppercase transition-all"
+                  style={{
+                    backgroundColor: '#542A3A',
+                    color: '#F7F1E8',
+                    padding: '14px 32px',
+                    fontSize: '12px',
+                    letterSpacing: '0.15em',
+                    borderRadius: '3px',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = '#3d1e2a'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = '#542A3A'}
+                >
+                  Shop the Collection →
+                </Link>
+                <Link
+                  to="/about"
+                  className="inline-flex items-center justify-center font-body font-medium tracking-widest uppercase transition-all"
+                  style={{
+                    border: '1px solid #542A3A',
+                    color: '#542A3A',
+                    padding: '14px 32px',
+                    fontSize: '12px',
+                    letterSpacing: '0.15em',
+                    borderRadius: '3px',
+                    backgroundColor: 'transparent',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#542A3A'; e.currentTarget.style.color = '#F7F1E8'; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#542A3A'; }}
+                >
+                  Our Story
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Right: Hero Lifestyle Image ── */}
+          <div
+            className="relative hidden lg:block"
+            style={{ flex: '1 1 50%' }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url(/images/hero-lifestyle.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+            {/* Left-edge gradient fade into ivory */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(to right, #F7F1E8 0%, transparent 18%)',
+              }}
+            />
+            {/* Bottom gradient fade */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(to top, #F7F1E8 0%, transparent 12%)',
+              }}
+            />
+          </div>
+
+          {/* Mobile: show image as a banner below text */}
+          <div className="block lg:hidden relative" style={{ height: '340px', overflow: 'hidden' }}>
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'url(/images/hero-lifestyle.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center top',
+              }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(to bottom, #F7F1E8 0%, transparent 20%, transparent 80%, #F7F1E8 100%)',
+              }}
+            />
           </div>
         </div>
       </section>
