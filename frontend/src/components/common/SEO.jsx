@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 const DEFAULT_TITLE = 'Handmade Store — Unique Artisanal Crafts & Handcrafted Gifts';
 const DEFAULT_DESCRIPTION = 'Discover beautifully handcrafted, artisanal products made with passion and premium materials. Unique home decor, accessories, and gifts.';
-const DEFAULT_IMAGE = '/favicon.svg';
+const DEFAULT_IMAGE = '/logo-512.png';
 
 const SEO = ({
   title,
