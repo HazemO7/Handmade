@@ -1,44 +1,53 @@
 const env = require('../../config/env');
 const AppError = require('../../common/errors/AppError');
-// In a real production app, we would import OpenAI or Replicate SDK here
-// const Replicate = require('replicate');
-// const replicate = new Replicate({ auth: env.AI_API_KEY });
 
 /**
  * Process image via AI (Background Removal + Brand Styling)
- * Uses a mock/simulated delay for development/testing if AI_API_KEY is missing.
- * 
+ *
+ * Strategy:
+ * 1. Use Cloudinary's background removal to cleanly isolate the product
+ * 2. Place on a clean, brand-colored ivory background
+ * 3. Apply auto-quality and auto-format for performance
+ *
+ * This approach preserves the product 100% faithfully — no GenAI
+ * distortion of beads, colors, or textures.
+ *
  * @param {String} imageUrl - The original image URL from Cloudinary
  * @param {Object} brandSettings - BrandSettings document containing imageStyle
- * @returns {Promise<String>} processedUrl - URL or buffer of processed image
+ * @returns {Promise<String>} processedUrl - URL of processed image
  */
 const processImage = async (imageUrl, brandSettings) => {
   try {
-    const prompt = `
-      ${brandSettings.imageStyle}
-      IMPORTANT: Preserve the exact shape, color, material, texture, and design of the product in the input image.
-      Only change the background and lighting.
-    `.trim();
+    console.log(`[AI Image Processor] Processing image: ${imageUrl}`);
 
-    console.log(`[AI Image Processor] Generating AI background for: ${imageUrl}`);
-    
-    // Cloudinary Generative AI Background Replacement
+    // Cloudinary URL-based transformations (no SDK calls needed)
     if (imageUrl && imageUrl.includes('cloudinary.com')) {
-      // Concise background prompt tailored for HABA brand aesthetic
-      const bgPrompt = encodeURIComponent('warm ivory natural linen fabric surface with soft natural studio lighting');
+      // Approach: Remove background → place on HABA ivory background
+      // e_background_removal — AI-powered clean background removal
+      // b_rgb:F7F1E8 — HABA Ivory as the new solid background
+      // c_pad,ar_4:5,g_center — pad to 4:5 aspect ratio (e-commerce standard), centered
+      // f_auto,q_auto — optimal format and quality
+      const transformations = [
+        'e_background_removal',    // Clean AI background removal
+        'b_rgb:F7F1E8',            // HABA Ivory background
+        'c_pad,ar_4:5,g_center',   // E-commerce 4:5 aspect ratio, product centered
+        'f_auto,q_auto'            // Optimal delivery
+      ].join(',');
+
       const enhancedUrl = imageUrl.replace(
         '/upload/',
-        `/upload/e_gen_background_replace:prompt_${bgPrompt},f_auto,q_auto/`
+        `/upload/${transformations}/`
       );
-      console.log(`[AI Image Processor] Transformed to AI background URL: ${enhancedUrl}`);
+      console.log(`[AI Image Processor] Enhanced URL: ${enhancedUrl}`);
       return enhancedUrl;
     }
 
-    // Otherwise simulate slight processing delay and return URL
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Non-Cloudinary images: return as-is with a query flag
+    await new Promise(resolve => setTimeout(resolve, 500));
     return `${imageUrl}?enhanced=true&style=haba_ivory`;
   } catch (error) {
     console.warn('AI Image Processing notice:', error.message);
+    // Always fallback to original — never break the upload flow
     return imageUrl;
   }
 };
