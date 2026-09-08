@@ -222,7 +222,7 @@ const Home = () => {
         }}
       >
         <Marquee
-          speed={28}
+          speed={48}
           itemClassName="font-heading text-lg sm:text-xl md:text-2xl text-[#F7F1E8] font-normal tracking-wide px-3"
           separator={<span className="mx-6 text-[#C5A56A] text-base select-none">✦</span>}
           items={[

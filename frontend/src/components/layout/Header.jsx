@@ -34,7 +34,7 @@ const Header = () => {
         }}
       >
         <Marquee
-          speed={34}
+          speed={52}
           items={marqueeAnnouncements}
           itemClassName="text-[11px] tracking-widest font-medium uppercase font-body px-2"
           separator={<span className="mx-4 text-[#C5A56A] text-[10px]">✦</span>}
