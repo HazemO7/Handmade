@@ -16,7 +16,6 @@ const Header = () => {
     'حَبّة ورا حَبّة، حكاية بتتعمل',
     'صناعة يدوية 100% بحب وإتقان',
     'MADE BEAD BY BEAD',
-    'شحن متاح لجميع المحافظات والدول',
     'UNIQUE ARTISAN LUXURY PIECES',
     'قطع فنية فريدة صُنعت لأجلك',
     'HANDMADE WITH LOVE & PATIENCE',
