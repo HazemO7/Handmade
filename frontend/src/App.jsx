@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Layout
 import Header from './components/layout/Header';
@@ -9,6 +9,7 @@ import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
+import About from './pages/About';
 
 import AdminLayout from './components/layout/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -64,6 +65,14 @@ const App = () => {
             <Footer />
           </>
         } />
+        <Route path="/about" element={
+          <>
+            <Header />
+            <main className="flex-grow"><About /></main>
+            <Footer />
+          </>
+        } />
+        <Route path="/our-story" element={<Navigate to="/about" replace />} />
 
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />
