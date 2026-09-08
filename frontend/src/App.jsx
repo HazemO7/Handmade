@@ -1,9 +1,10 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-// Layout
+// Layout & Common
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // Pages
 import Home from './pages/Home';
@@ -35,6 +36,7 @@ function PlaceholderPage({ title }) {
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen font-body text-warm-800 bg-warm-50">
+      <ScrollToTop />
       <Routes>
         {/* Public Routes - Wrapped in Header/Footer */}
         <Route path="/" element={
