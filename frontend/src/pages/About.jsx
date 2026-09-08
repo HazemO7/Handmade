@@ -96,7 +96,7 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Left Column: Visual Image with soft luxury aesthetic */}
-            <div className="lg:col-span-5 relative">
+            <div className="lg:col-span-5">
               <div className="relative rounded-sm overflow-hidden shadow-xl" style={{ aspectRatio: '4/5', backgroundColor: '#E8C7B8' }}>
                 <img
                   src="/images/hero-lifestyle.webp"
@@ -119,18 +119,25 @@ const About = () => {
                 </div>
               </div>
 
-              {/* Decorative Floating Card */}
+              {/* Clean Sub-Photo Artisan Card (Zero Overlap Collision) */}
               <div
-                className="hidden sm:block absolute -bottom-6 -right-6 p-5 rounded-sm border shadow-lg"
-                style={{ backgroundColor: '#542A3A', borderColor: '#3d1e2a', color: '#F7F1E8', maxWidth: '240px' }}
+                className="mt-4 p-4 rounded-sm border flex items-center gap-3.5 shadow-sm"
+                style={{ backgroundColor: '#fff', borderColor: '#E8C7B8' }}
               >
-                <FiAward className="w-5 h-5 mb-2" style={{ color: '#C5A56A' }} />
-                <p className="font-heading text-lg leading-snug">
-                  100% Handcrafted
-                </p>
-                <p className="font-body text-xs mt-1" style={{ color: '#E8C7B8' }}>
-                  بدون ماكينات، بصبر ولمسة يد فنانة.
-                </p>
+                <div
+                  className="p-2.5 rounded-sm flex-shrink-0 flex items-center justify-center"
+                  style={{ backgroundColor: '#542A3A', color: '#C5A56A' }}
+                >
+                  <FiAward className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-heading font-semibold text-base sm:text-lg leading-tight" style={{ color: '#542A3A' }}>
+                    100% Handcrafted · صناعة يدوية خالصة
+                  </h4>
+                  <p className="font-body text-xs sm:text-sm mt-0.5" style={{ color: '#635751' }}>
+                    بدون ماكينات، بصبر ولمسة يد فنانة تشعرين بها في كل قطعة.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -171,13 +178,12 @@ const About = () => {
         </div>
       </section>
 
-      {/* ── Marquee Editorial Ribbon ── */}
-      <div className="py-4 border-y overflow-hidden" style={{ backgroundColor: '#292525', borderColor: '#3d3939' }}>
+      {/* ── Marquee Editorial Ribbon (Visible Ivory Text) ── */}
+      <div className="py-4 border-y overflow-hidden" style={{ backgroundColor: '#292525', borderColor: '#3d3939', color: '#F7F1E8' }}>
         <Marquee
           speed={46}
           items={marqueeWords}
-          itemClassName="text-sm font-heading font-normal tracking-wider px-4"
-          itemStyle={{ color: '#F7F1E8' }}
+          itemClassName="text-sm font-heading font-normal tracking-wider px-4 text-[#F7F1E8]"
           separator={<span className="mx-4 text-xs" style={{ color: '#C5A56A' }}>✦</span>}
         />
       </div>
