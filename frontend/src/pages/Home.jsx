@@ -10,6 +10,7 @@ const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [debugError, setDebugError] = useState(null);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -31,6 +32,7 @@ const Home = () => {
         setCategories(cats.slice(0, 3));
       } catch (error) {
         console.error('Failed to load home data', error);
+        setDebugError(error.message || 'Unknown network error');
       } finally {
         setIsLoading(false);
       }
@@ -42,6 +44,16 @@ const Home = () => {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F7F1E8' }}>
         <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (debugError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: '#F7F1E8', padding: '20px' }}>
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Products</h2>
+        <p className="text-lg bg-white p-4 rounded border border-red-200">{debugError}</p>
+        <p className="mt-4 text-gray-600">Please share a screenshot of this error.</p>
       </div>
     );
   }
