@@ -172,7 +172,7 @@ const Home = () => {
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: 'url(/images/hero-lifestyle.jpg)',
+                backgroundImage: 'url(/images/hero-lifestyle.webp)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
@@ -198,7 +198,7 @@ const Home = () => {
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: 'url(/images/hero-lifestyle.jpg)',
+                backgroundImage: 'url(/images/hero-lifestyle.webp)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center top',
               }}
