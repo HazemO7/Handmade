@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FiMenu, FiX, FiUser } from 'react-icons/fi';
+import Marquee from '../common/Marquee';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,8 +12,35 @@ const Header = () => {
     { name: 'Our Story', path: '/about' },
   ];
 
+  const marqueeAnnouncements = [
+    'حَبّة ورا حَبّة، حكاية بتتعمل',
+    'صناعة يدوية 100% بحب وإتقان',
+    'MADE BEAD BY BEAD',
+    'شحن متاح لجميع المحافظات والدول',
+    'UNIQUE ARTISAN LUXURY PIECES',
+    'قطع فنية فريدة صُنعت لأجلك',
+    'HANDMADE WITH LOVE & PATIENCE',
+  ];
+
   return (
     <header className="bg-warm-50 border-b border-peach-200 sticky top-0 z-50" style={{ borderColor: '#E8C7B8' }}>
+      {/* ── Top Moving Ticker / الشريط المتحرك ── */}
+      <div
+        className="py-1.5 overflow-hidden border-b select-none"
+        style={{
+          backgroundColor: '#542A3A',
+          borderColor: '#3d1e2a',
+          color: '#F7F1E8',
+        }}
+      >
+        <Marquee
+          speed={34}
+          items={marqueeAnnouncements}
+          itemClassName="text-[11px] tracking-widest font-medium uppercase font-body px-2"
+          separator={<span className="mx-4 text-[#C5A56A] text-[10px]">✦</span>}
+        />
+      </div>
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
 

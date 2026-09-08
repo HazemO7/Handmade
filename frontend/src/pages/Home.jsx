@@ -4,6 +4,7 @@ import { productApi, categoryApi } from '../services/api';
 import ProductCard from '../components/product/ProductCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import SEO from '../components/common/SEO';
+import Marquee from '../components/common/Marquee';
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -212,10 +213,30 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── Thin Divider ── */}
-      <div style={{ backgroundColor: '#F7F1E8', padding: '0 0 0 0' }}>
-        <hr className="haba-divider" />
-      </div>
+      {/* ── Editorial Brand Marquee Ribbon / شريط البراند المتحرك ── */}
+      <section
+        className="relative overflow-hidden py-4 border-y select-none"
+        style={{
+          backgroundColor: '#292525',
+          borderColor: '#3d1e2a',
+        }}
+      >
+        <Marquee
+          speed={28}
+          itemClassName="font-heading text-lg sm:text-xl md:text-2xl text-[#F7F1E8] font-normal tracking-wide px-3"
+          separator={<span className="mx-6 text-[#C5A56A] text-base select-none">✦</span>}
+          items={[
+            'HABA · حَبّة',
+            'حَبّة ورا حَبّة، حكاية بتتعمل',
+            'MADE BEAD BY BEAD',
+            'صناعة يدوية فاخرة',
+            'ARTISAN BEADWORK',
+            'قطع فريدة ومميزة صُنعت لأجلك',
+            'PATIENCE, DETAIL & LOVE',
+            'تصاميم حصرية مصنوعة بحب',
+          ]}
+        />
+      </section>
 
       {/* ── Shop by Category ── */}
       {categories.length > 0 && (
