@@ -88,20 +88,20 @@ const AddProductPage = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-warm-900 font-heading">Add New Product</h1>
-        <p className="text-warm-600 mt-2">Create a new product using our AI-powered wizard.</p>
+    <div className="max-w-5xl mx-auto pb-8 sm:pb-12">
+      <div className="mb-4 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-warm-900 font-heading">Add New Product</h1>
+        <p className="text-sm text-warm-600 mt-1 sm:mt-2">Create and enhance a new product using our AI-powered wizard.</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-warm-200 p-6 md:p-8">
+      <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-warm-200 p-4 sm:p-6 md:p-8">
         <WizardStepper 
           currentStep={currentStep} 
           onStepClick={handleJumpToStep}
           highestStepReached={highestStepReached}
         />
         
-        <div className="mt-10 min-h-[400px]">
+        <div className="mt-4 sm:mt-8 min-h-[320px] sm:min-h-[400px]">
           {renderStep()}
         </div>
       </div>

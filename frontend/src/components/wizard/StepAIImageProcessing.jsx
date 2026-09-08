@@ -52,8 +52,8 @@ const ImageProcessorCard = ({ product, image, onImageProcessed }) => {
   const isProcessed = !!image.processedUrl;
 
   return (
-    <div className="border border-warm-200 rounded-xl p-4 bg-white mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="border border-warm-200 rounded-xl p-3.5 sm:p-4 bg-white mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         
         {/* Original */}
         <div>
@@ -69,16 +69,16 @@ const ImageProcessorCard = ({ product, image, onImageProcessed }) => {
             {isProcessed ? 'Enhanced' : 'AI Processing'}
           </h4>
           
-          <div className="flex-1 flex flex-col items-center justify-center min-h-[200px]">
+          <div className="flex-1 flex flex-col items-center justify-center min-h-[160px] sm:min-h-[200px]">
             {isProcessed ? (
               <div className="w-full aspect-square bg-warm-100 rounded-lg overflow-hidden border border-brand-300">
                 <img src={image.processedUrl} alt="Enhanced" className="w-full h-full object-cover" />
               </div>
             ) : status === 'IDLE' ? (
-              <div className="text-center p-6 bg-warm-50 rounded-lg border border-warm-200 w-full h-full flex flex-col items-center justify-center">
-                <FiZap className="w-10 h-10 text-brand-400 mb-3" />
-                <p className="text-sm text-warm-600 mb-4">Remove background and apply brand styling.</p>
-                <Button onClick={handleProcess} isLoading={isStarting}>
+              <div className="text-center p-4 sm:p-6 bg-warm-50 rounded-lg border border-warm-200 w-full h-full flex flex-col items-center justify-center">
+                <FiZap className="w-8 h-8 sm:w-10 sm:h-10 text-brand-400 mb-2 sm:mb-3" />
+                <p className="text-xs sm:text-sm text-warm-600 mb-3 sm:mb-4">Remove background and apply brand styling.</p>
+                <Button onClick={handleProcess} isLoading={isStarting} className="w-full sm:w-auto">
                   Enhance Image
                 </Button>
               </div>
@@ -116,12 +116,12 @@ const StepAIImageProcessing = ({ productData, setProductData, onNext, onBack }) 
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-8">
+      <div className="text-center mb-6 sm:mb-8">
         <h2 className="text-xl font-medium text-warm-900">AI Image Enhancement</h2>
-        <p className="text-warm-600 mt-1">Let AI automatically remove backgrounds and apply your brand's signature look.</p>
+        <p className="text-warm-600 mt-1 text-sm sm:text-base">Let AI automatically remove backgrounds and apply your brand's signature look.</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {images.map(image => (
           <ImageProcessorCard 
             key={image._id} 
@@ -132,21 +132,21 @@ const StepAIImageProcessing = ({ productData, setProductData, onNext, onBack }) 
         ))}
         
         {images.length === 0 && (
-          <div className="text-center p-12 bg-warm-50 rounded-xl border border-warm-200">
-            <p className="text-warm-500">No images to process.</p>
+          <div className="text-center p-8 sm:p-12 bg-warm-50 rounded-xl border border-warm-200">
+            <p className="text-warm-500 text-sm sm:text-base">No images to process.</p>
           </div>
         )}
       </div>
 
-      <div className="flex justify-between pt-8 mt-8 border-t border-warm-200">
-        <Button variant="outline" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-warm-200">
+        <Button variant="outline" onClick={onBack} className="w-full sm:w-auto">
           Back
         </Button>
-        <div className="flex space-x-3">
-          <Button variant="ghost" onClick={onNext}>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button variant="ghost" onClick={onNext} className="w-full sm:w-auto">
             Skip for now
           </Button>
-          <Button onClick={onNext}>
+          <Button onClick={onNext} className="w-full sm:w-auto">
             Continue (AI Content)
           </Button>
         </div>

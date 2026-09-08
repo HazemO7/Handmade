@@ -117,17 +117,17 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
       </div>
 
       {status === 'IDLE' && !isManualEdit && (
-        <div className="text-center p-12 bg-warm-50 rounded-xl border border-warm-200">
-          <FiZap className="w-12 h-12 text-brand-500 mx-auto mb-4" />
+        <div className="text-center p-6 sm:p-12 bg-warm-50 rounded-xl border border-warm-200">
+          <FiZap className="w-10 h-10 sm:w-12 sm:h-12 text-brand-500 mx-auto mb-3 sm:mb-4" />
           <h3 className="text-lg font-medium text-warm-900 mb-2">Write Product Copy</h3>
-          <p className="text-warm-600 mb-6 max-w-md mx-auto">
+          <p className="text-warm-600 mb-6 max-w-md mx-auto text-sm sm:text-base">
             Our AI will write compelling marketing copy based on your product's name, category, and materials.
           </p>
-          <div className="flex justify-center space-x-4">
-            <Button onClick={handleGenerate} size="lg" isLoading={isGenerating}>
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <Button onClick={handleGenerate} size="lg" isLoading={isGenerating} className="w-full sm:w-auto">
               <FiZap className="mr-2" /> Generate Content
             </Button>
-            <Button variant="outline" size="lg" onClick={() => setIsManualEdit(true)}>
+            <Button variant="outline" size="lg" onClick={() => setIsManualEdit(true)} className="w-full sm:w-auto">
               <FiEdit3 className="mr-2" /> Write Manually
             </Button>
           </div>
@@ -144,7 +144,7 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
         <div className="max-w-md mx-auto">
           <AIJobStatus job={job} status={status} error={error} onRetry={retryJob} />
           <div className="mt-4 text-center">
-            <Button variant="ghost" onClick={() => setIsManualEdit(true)}>
+            <Button variant="ghost" onClick={() => setIsManualEdit(true)} className="w-full sm:w-auto">
               Write Manually Instead
             </Button>
           </div>
@@ -152,8 +152,8 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
       )}
 
       {isManualEdit && (
-        <div className="bg-white p-6 rounded-xl border border-warm-200 shadow-sm space-y-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-warm-200 shadow-sm space-y-5 sm:space-y-6">
+          <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium text-warm-900">Product Content</h3>
             {status === 'COMPLETED' && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -169,7 +169,7 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
               value={content.shortDescription}
               onChange={handleInputChange}
               rows={2}
-              className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+              className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
             />
           </div>
 
@@ -179,8 +179,8 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
               name="description"
               value={content.description}
               onChange={handleInputChange}
-              rows={6}
-              className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+              rows={5}
+              className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
             />
           </div>
 
@@ -190,13 +190,13 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
               name="highlights"
               value={content.highlights}
               onChange={handleInputChange}
-              rows={4}
+              rows={3}
               placeholder="e.g. Handmade with care&#10;Eco-friendly materials"
-              className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+              className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-warm-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-warm-100">
             <div>
               <label className="block text-sm font-medium text-warm-900 mb-1">SEO Title</label>
               <input
@@ -204,7 +204,7 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
                 name="seoTitle"
                 value={content.seoTitle}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+                className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
               />
             </div>
             <div>
@@ -214,34 +214,34 @@ const StepAIContent = ({ productData, setProductData, onNext, onBack }) => {
                 name="tags"
                 value={content.tags}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+                className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
               />
             </div>
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-warm-900 mb-1">SEO Description</label>
               <textarea
                 name="seoDescription"
                 value={content.seoDescription}
                 onChange={handleInputChange}
                 rows={2}
-                className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+                className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
               />
             </div>
           </div>
         </div>
       )}
 
-      <div className="flex justify-between pt-8 mt-8 border-t border-warm-200">
-        <Button variant="outline" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-warm-200">
+        <Button variant="outline" onClick={onBack} className="w-full sm:w-auto">
           Back
         </Button>
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           {isManualEdit ? (
-            <Button onClick={handleSaveContent} isLoading={isApplying}>
+            <Button onClick={handleSaveContent} isLoading={isApplying} className="w-full sm:w-auto">
               Save & Continue
             </Button>
           ) : (
-            <Button variant="ghost" onClick={() => { setIsManualEdit(true); }}>
+            <Button variant="ghost" onClick={() => { setIsManualEdit(true); }} className="w-full sm:w-auto">
               Skip to Manual Entry
             </Button>
           )}

@@ -68,14 +68,14 @@ const StepProductInfo = ({ productData, setProductData, onNext }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-3xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="col-span-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6 max-w-3xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div className="col-span-1 sm:col-span-2">
           <label className="block text-sm font-medium text-warm-900 mb-1">Product Name *</label>
           <input
             {...register('name')}
-            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm ${errors.name ? 'border-red-500' : 'border-warm-300'}`}
-            placeholder="e.g. Hand-painted Ceramic Vase"
+            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm ${errors.name ? 'border-red-500' : 'border-warm-300'}`}
+            placeholder="e.g. Hand-beaded Evening Bag"
           />
           {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
         </div>
@@ -84,7 +84,7 @@ const StepProductInfo = ({ productData, setProductData, onNext }) => {
           <label className="block text-sm font-medium text-warm-900 mb-1">Category *</label>
           <select
             {...register('category')}
-            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm ${errors.category ? 'border-red-500' : 'border-warm-300'}`}
+            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm ${errors.category ? 'border-red-500' : 'border-warm-300'}`}
           >
             <option value="">Select a category</option>
             {categories.map(c => (
@@ -100,7 +100,7 @@ const StepProductInfo = ({ productData, setProductData, onNext }) => {
             type="number"
             step="0.01"
             {...register('price', { valueAsNumber: true })}
-            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm ${errors.price ? 'border-red-500' : 'border-warm-300'}`}
+            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm ${errors.price ? 'border-red-500' : 'border-warm-300'}`}
           />
           {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
         </div>
@@ -110,7 +110,7 @@ const StepProductInfo = ({ productData, setProductData, onNext }) => {
           <input
             type="number"
             {...register('stock', { valueAsNumber: true })}
-            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm ${errors.stock ? 'border-red-500' : 'border-warm-300'}`}
+            className={`w-full p-3 border rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm ${errors.stock ? 'border-red-500' : 'border-warm-300'}`}
           />
           {errors.stock && <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>}
         </div>
@@ -119,24 +119,24 @@ const StepProductInfo = ({ productData, setProductData, onNext }) => {
           <label className="block text-sm font-medium text-warm-900 mb-1">Materials (comma separated)</label>
           <input
             {...register('materials')}
-            className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
-            placeholder="e.g. Clay, Glaze, Ceramic"
+            className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
+            placeholder="e.g. Glass Beads, Acrylic, Satin"
           />
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-1 sm:col-span-2">
           <label className="block text-sm font-medium text-warm-900 mb-1">Short Description (Optional)</label>
           <textarea
             {...register('shortDescription')}
             rows={3}
-            className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm"
+            className="w-full p-3 border border-warm-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 text-base sm:text-sm"
             placeholder="A brief summary. AI can generate this for you later."
           />
         </div>
       </div>
 
       <div className="flex justify-end pt-4 border-t border-warm-200">
-        <Button type="submit" isLoading={isSubmitting}>
+        <Button type="submit" isLoading={isSubmitting} className="w-full sm:w-auto">
           Save & Continue
         </Button>
       </div>
