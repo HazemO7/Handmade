@@ -17,7 +17,7 @@ const Home = () => {
       try {
         setIsLoading(true);
         const [productsRes, categoriesRes] = await Promise.all([
-          productApi.getProducts({ limit: 4, sort: '-createdAt', _t: Date.now() }),
+          productApi.getProducts({ limit: 4, sort: '-createdAt' }),
           categoryApi.getCategories()
         ]);
 

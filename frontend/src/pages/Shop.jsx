@@ -32,8 +32,7 @@ const Shop = () => {
         const params = {
           page: currentPage,
           limit: 12,
-          sort,
-          _t: Date.now()
+          sort
         };
         
         if (categoryFilter) {

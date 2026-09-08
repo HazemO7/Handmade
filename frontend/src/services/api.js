@@ -21,6 +21,10 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Force cache-busting for GET requests to bypass broken 308 redirects cached by Vercel
+    if (config.method === 'get') {
+      config.params = { ...config.params, _cb: Date.now() };
+    }
     return config;
   },
   (error) => Promise.reject(error)
