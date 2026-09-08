@@ -7,8 +7,8 @@ const env = require('./env');
  * In production: allow configured FRONTEND_URL + Vercel preview URLs.
  */
 const allowedOrigins = env.NODE_ENV === 'production'
-  ? [env.FRONTEND_URL].filter(Boolean)
-  : [env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000'];
+  ? [env.FRONTEND_URL, 'https://habba.tech', 'https://www.habba.tech'].filter(Boolean)
+  : [env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000', 'https://habba.tech', 'https://www.habba.tech'];
 
 const corsOptions = {
   origin: (origin, callback) => {
