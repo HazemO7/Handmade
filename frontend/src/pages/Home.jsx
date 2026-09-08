@@ -32,7 +32,15 @@ const Home = () => {
         setCategories(cats.slice(0, 3));
       } catch (error) {
         console.error('Failed to load home data', error);
-        setDebugError(error.message || 'Unknown network error');
+        setDebugError({
+          message: error.message || 'Unknown network error',
+          name: error.name,
+          code: error.code,
+          configUrl: error.config?.url,
+          status: error.response?.status,
+          response: error.response?.data,
+          rawError: error
+        });
       } finally {
         setIsLoading(false);
       }
@@ -49,11 +57,15 @@ const Home = () => {
   }
 
   if (debugError) {
+    const rawApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').trim().replace(/\/+$/, '');
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: '#F7F1E8', padding: '20px' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center text-left" style={{ backgroundColor: '#F7F1E8', padding: '20px' }}>
         <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Products</h2>
-        <p className="text-lg bg-white p-4 rounded border border-red-200">{debugError}</p>
-        <p className="mt-4 text-gray-600">Please share a screenshot of this error.</p>
+        <div className="bg-white p-4 rounded border border-red-200 w-full max-w-2xl overflow-auto text-sm font-mono">
+          <p><strong>API_URL in use:</strong> {rawApiUrl}</p>
+          <pre className="mt-4 text-xs bg-gray-100 p-2 rounded">{JSON.stringify(debugError, null, 2)}</pre>
+        </div>
+        <p className="mt-4 text-gray-600 font-body">Please share a screenshot of this entire box.</p>
       </div>
     );
   }
