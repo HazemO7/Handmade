@@ -1,13 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiMessageCircle, FiX, FiSend, FiTrash2, FiShoppingBag, FiExternalLink } from 'react-icons/fi';
+import {
+  FiMessageCircle,
+  FiX,
+  FiSend,
+  FiRotateCcw,
+  FiShoppingBag,
+  FiArrowLeft,
+  FiExternalLink,
+} from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { chatApi } from '../../services/api';
 
 const QUICK_PROMPTS = [
-  '👜 ما هي أحدث الشنط والأسعار؟',
-  '✨ عايزة أطلب تصميم خاص',
-  '🚚 ما هي مدة وتكلفة الشحن؟',
-  '💎 خامات الخرز وطريقة العناية',
+  { text: '👜 أحدث الشنط والأسعار', query: 'ما هي أحدث الشنط والأسعار المتوفرة؟' },
+  { text: '✨ عايزة أطلب تفصيل خاص', query: 'عايزة أطلب تصميم وتفصيل شنطة خاصة' },
+  { text: '🚚 مدة وتكلفة الشحن', query: 'ما هي مدة وتكلفة الشحن والتوصيل لمحافظتي؟' },
+  { text: '💎 خامات الخرز والعناية به', query: 'ما هي خامات الخرز وكيف أعتني بالشنطة؟' },
 ];
 
 const INITIAL_MESSAGE = {
@@ -17,7 +26,7 @@ const INITIAL_MESSAGE = {
   timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
 };
 
-const STORAGE_KEY = 'haba_chat_session_v1';
+const STORAGE_KEY = 'haba_chat_session_v2';
 
 const ChatWidget = () => {
   const location = useLocation();
@@ -27,7 +36,7 @@ const ChatWidget = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load chat history from sessionStorage if available
+  // Load chat history from sessionStorage
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem(STORAGE_KEY);
@@ -36,7 +45,7 @@ const ChatWidget = () => {
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch {
-      // fallback to initial
+      // fallback
     }
     return [INITIAL_MESSAGE];
   });
@@ -44,10 +53,10 @@ const ChatWidget = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Hide chat widget completely on admin routes
+  // Hide chat completely in admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  // Save messages to sessionStorage
+  // Save to sessionStorage
   useEffect(() => {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
@@ -56,7 +65,7 @@ const ChatWidget = () => {
     }
   }, [messages]);
 
-  // Scroll to bottom whenever messages change or loading state changes
+  // Scroll to bottom on new messages
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,7 +77,7 @@ const ChatWidget = () => {
     if (isOpen) {
       setShowTeaser(false);
       setHasUnread(false);
-      setTimeout(() => inputRef.current?.focus(), 200);
+      setTimeout(() => inputRef.current?.focus(), 250);
     }
   }, [isOpen]);
 
@@ -92,7 +101,7 @@ const ChatWidget = () => {
     setIsLoading(true);
 
     try {
-      // Extract clean history for API context (last 6 exchanges)
+      // Filter clean history for context
       const historyContext = messages
         .filter((m) => m.id !== 'welcome-msg')
         .slice(-6)
@@ -121,7 +130,7 @@ const ChatWidget = () => {
       const errorMsg = {
         id: `bot-err-${Date.now()}`,
         role: 'assistant',
-        content: 'عذراً، حدث خطأ بسيط في الاتصال. يمكنكِ دائماً التواصل معنا مباشرة عبر واتساب وسنرد عليكِ فوراً!',
+        content: 'عذراً، حدث خطأ بسيط في الاتصال. يمكنكِ دائماً التواصل معنا مباشرة عبر واتساب وسنرد عليكِ فوراً! 💖',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -137,26 +146,33 @@ const ChatWidget = () => {
     }
   };
 
-  const handleClearChat = () => {
-    if (window.confirm('هل تودين بدء محادثة جديدة؟')) {
-      setMessages([INITIAL_MESSAGE]);
-      sessionStorage.removeItem(STORAGE_KEY);
-    }
+  const handleNewChat = () => {
+    setMessages([INITIAL_MESSAGE]);
+    sessionStorage.removeItem(STORAGE_KEY);
+    toast.success('تم بدء محادثة جديدة ✨', {
+      icon: '🔄',
+      style: {
+        borderRadius: '12px',
+        background: '#542A3A',
+        color: '#F7F1E8',
+        fontSize: '13px',
+      },
+    });
+    setTimeout(() => inputRef.current?.focus(), 150);
   };
 
-  // Helper to render bold text and line breaks without external markdown libs
+  // Helper to render bold text and line breaks smoothly
   const renderFormattedText = (text) => {
     if (!text) return null;
     const lines = text.split('\n');
     return lines.map((line, lineIdx) => {
-      // Process **bold** text
       const parts = line.split(/(\*\*.*?\*\*)/g);
       return (
         <React.Fragment key={lineIdx}>
           {parts.map((part, partIdx) => {
             if (part.startsWith('**') && part.endsWith('**')) {
               return (
-                <strong key={partIdx} className="font-semibold text-[#292525]">
+                <strong key={partIdx} className="font-semibold text-inherit">
                   {part.slice(2, -2)}
                 </strong>
               );
@@ -170,30 +186,38 @@ const ChatWidget = () => {
   };
 
   return (
-    <aside aria-label="مساعد حَبّة الذكي" className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 font-body">
+    <aside
+      aria-label="مساعد حَبّة الذكي"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 font-body"
+      style={{ direction: 'rtl' }}
+    >
       {/* ── Teaser Floating Tooltip on First Load ── */}
       {showTeaser && !isOpen && (
         <div
           role="status"
           aria-live="polite"
-          className="absolute bottom-16 right-0 mb-2 w-64 bg-white p-3.5 rounded-2xl shadow-xl border border-[#E8C7B8] text-right text-xs transition-all duration-300 animate-bounce-subtle"
-          style={{ direction: 'rtl' }}
+          onClick={() => setIsOpen(true)}
+          className="cursor-pointer absolute bottom-16 right-0 mb-2 w-72 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-[#E8C7B8] text-right text-xs transition-all duration-300 hover:scale-[1.02] active:scale-95 animate-bounce-subtle"
         >
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowTeaser(false);
             }}
-            className="absolute top-2 left-2 text-warm-400 hover:text-warm-700 p-0.5"
+            className="absolute top-2 left-2 text-warm-400 hover:text-warm-700 p-1 rounded-full hover:bg-warm-100 transition-colors"
             aria-label="إغلاق التنبيه"
           >
             <FiX className="h-3.5 w-3.5" />
           </button>
-          <div className="flex items-start gap-2.5">
-            <span className="text-lg flex-shrink-0">✨</span>
-            <div>
-              <p className="font-semibold text-[#542A3A] mb-0.5">مساعد حَبّة للتسوق</p>
-              <p className="text-warm-600 leading-relaxed">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full bg-[#542A3A] text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-[#C5A56A]/50">
+              <span className="text-base">✨</span>
+            </div>
+            <div className="flex-1 min-w-0 pr-0.5">
+              <p className="font-heading font-semibold text-sm text-[#542A3A] mb-0.5">
+                مساعد حَبّة الذكي
+              </p>
+              <p className="text-warm-600 leading-relaxed text-[12px]">
                 محتاجة تسألي عن أسعار الشنط أو طلب تفصيل خاص؟ أنا هنا لمساعدتكِ!
               </p>
             </div>
@@ -201,57 +225,65 @@ const ChatWidget = () => {
         </div>
       )}
 
-      {/* ── Chat Window ── */}
+      {/* ── Chat Window (Ultra Responsive for Mobile & Desktop) ── */}
       {isOpen && (
         <div
-          className="fixed inset-x-3 bottom-20 sm:inset-auto sm:absolute sm:bottom-16 sm:right-0 w-auto sm:w-[390px] h-[550px] max-h-[calc(100vh-100px)] flex flex-col bg-[#F7F1E8] rounded-2xl shadow-2xl border border-[#E8C7B8] overflow-hidden transition-all duration-300 animate-fadeIn"
-          style={{ direction: 'rtl' }}
+          className="fixed inset-x-2.5 bottom-2.5 top-16 sm:top-auto sm:inset-auto sm:absolute sm:bottom-20 sm:right-0 sm:w-[410px] sm:h-[620px] sm:max-h-[85vh] flex flex-col bg-[#F7F1E8] rounded-3xl sm:rounded-3xl shadow-2xl border border-[#E8C7B8]/90 overflow-hidden transition-all duration-300 animate-fadeIn"
         >
-          {/* Header */}
+          {/* ── Header ── */}
           <div
-            className="px-4 py-3.5 flex items-center justify-between text-white flex-shrink-0 shadow-sm"
-            style={{ backgroundColor: '#542A3A' }}
+            className="px-4 py-3.5 flex items-center justify-between text-white flex-shrink-0 shadow-md relative"
+            style={{
+              background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
+              borderBottom: '1px solid rgba(197, 165, 106, 0.35)',
+            }}
           >
+            {/* Brand identity */}
             <div className="flex items-center gap-3">
-              <div className="relative">
+              <div className="relative flex-shrink-0">
                 <img
-                  src="/favicon-32x32.png"
-                  alt="HABA Logo"
-                  className="w-9 h-9 rounded-full object-cover border border-[#C5A56A]/60 bg-[#F7F1E8] p-0.5"
+                  src="/logo-mark.png"
+                  alt="HABA"
+                  className="w-10 h-10 rounded-full object-cover border border-[#C5A56A] bg-[#F7F1E8] p-0.5 shadow-sm"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.src = '/favicon-32x32.png';
                   }}
                 />
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#542A3A] rounded-full"></span>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#542A3A] rounded-full"></span>
               </div>
-              <div className="text-right">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-heading font-semibold text-base text-[#F7F1E8] leading-tight">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-heading font-semibold text-base sm:text-lg text-[#F7F1E8] leading-tight">
                     مساعد حَبّة الذكي
                   </h3>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#C5A56A]/25 text-[#E8C7B8] font-body tracking-wider">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#C5A56A]/25 text-[#E8C7B8] font-body tracking-wider border border-[#C5A56A]/30">
                     AI
                   </span>
                 </div>
-                <p className="text-[11px] text-[#E8C7B8] flex items-center gap-1 mt-0.5">
+                <p className="text-[11px] text-[#E8C7B8]/90 flex items-center gap-1 mt-0.5 font-light">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-                  متصل الآن · الرد فوري
+                  متصل الآن · الرد لحظي
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            {/* Header Actions: Clear/New Chat + Close */}
+            <div className="flex items-center gap-1.5">
+              {/* CLEAR / NEW CHAT BUTTON — Highly Visible and Clear */}
               <button
-                onClick={handleClearChat}
-                className="p-1.5 text-[#E8C7B8] hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                onClick={handleNewChat}
+                className="flex items-center gap-1.5 text-xs bg-white/15 hover:bg-white/25 active:scale-95 text-[#F7F1E8] px-2.5 py-1.5 rounded-full border border-white/20 transition-all font-body shadow-xs"
                 title="بدء محادثة جديدة"
-                aria-label="مسح المحادثة"
               >
-                <FiTrash2 className="h-4 w-4" />
+                <FiRotateCcw className="w-3.5 h-3.5" />
+                <span className="text-[11px] font-medium hidden sm:inline">محادثة جديدة</span>
+                <span className="text-[11px] font-medium sm:hidden">جديدة</span>
               </button>
+
+              {/* Close Button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-[#E8C7B8] hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="p-1.5 text-[#E8C7B8] hover:text-white hover:bg-white/15 active:scale-95 rounded-full transition-colors"
                 title="إغلاق الدردشة"
                 aria-label="إغلاق"
               >
@@ -260,93 +292,112 @@ const ChatWidget = () => {
             </div>
           </div>
 
-          {/* Messages Body */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm bg-gradient-to-b from-[#F7F1E8] to-[#f4ebe0]">
-            {/* Quick action chips (always accessible) */}
-            <div className="space-y-1.5 pb-2">
-              <p className="text-[11px] text-warm-500 font-medium">أسئلة شائعة يمكنكِ الضغط عليها:</p>
+          {/* ── Messages Body ── */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm bg-gradient-to-b from-[#F7F1E8] via-[#F4ECE3] to-[#efe3d5]">
+            {/* Quick action chips bar */}
+            <div className="space-y-2 pb-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[11.5px] text-warm-600 font-medium">
+                  استفسارات سريعة بضغطة واحدة:
+                </span>
+                {messages.length > 2 && (
+                  <button
+                    onClick={handleNewChat}
+                    className="text-[11px] text-[#542A3A] hover:underline font-semibold flex items-center gap-1"
+                  >
+                    <FiRotateCcw className="w-3 h-3" />
+                    <span>محادثة جديدة</span>
+                  </button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-1.5">
                 {QUICK_PROMPTS.map((prompt, idx) => (
                   <button
                     key={idx}
-                    onClick={() => handleSend(prompt)}
+                    onClick={() => handleSend(prompt.query)}
                     disabled={isLoading}
-                    className="text-xs bg-white/90 hover:bg-[#542A3A] hover:text-white text-[#542A3A] px-2.5 py-1.5 rounded-full border border-[#E8C7B8] shadow-xs transition-all text-right font-body disabled:opacity-50"
+                    className="text-xs bg-white/95 hover:bg-[#542A3A] hover:text-white text-[#542A3A] px-3 py-1.5 rounded-full border border-[#E8C7B8] shadow-xs hover:shadow-sm transition-all duration-200 text-right font-body active:scale-95 disabled:opacity-50"
                   >
-                    {prompt}
+                    {prompt.text}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Conversation messages */}
+            {/* Conversation Messages */}
             {messages.map((msg) => {
               const isUser = msg.role === 'user';
               return (
                 <div
                   key={msg.id}
-                  className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
+                  className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} transition-all`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed text-right transition-all shadow-xs ${
+                    className={`max-w-[88%] sm:max-w-[85%] rounded-2xl px-4 py-3 leading-relaxed text-right transition-all shadow-xs ${
                       isUser
-                        ? 'bg-[#542A3A] text-[#F7F1E8] rounded-br-xs'
+                        ? 'bg-[#542A3A] text-[#F7F1E8] rounded-br-xs shadow-md'
                         : 'bg-white text-[#292525] border border-[#E8C7B8] rounded-bl-xs'
                     }`}
                   >
-                    <div className="text-[13.5px] whitespace-pre-wrap font-body">
+                    <div className="text-[13.5px] sm:text-[14px] whitespace-pre-wrap font-body leading-relaxed">
                       {renderFormattedText(msg.content)}
                     </div>
 
                     {/* WhatsApp Action Button if custom order is discussed */}
                     {msg.whatsappUrl && (msg.isCustomOrder || msg.content.includes('واتساب')) && (
-                      <div className="mt-3 pt-2.5 border-t border-warm-100">
+                      <div className="mt-3 pt-3 border-t border-warm-100">
                         <a
                           href={msg.whatsappUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-1.5 w-full text-xs font-semibold py-2 px-3 rounded-lg text-white shadow-xs transition-colors"
-                          style={{ backgroundColor: '#25D366' }}
+                          className="inline-flex items-center justify-center gap-2 w-full text-xs sm:text-sm font-semibold py-2.5 px-3.5 rounded-xl text-white shadow-md hover:brightness-105 active:scale-98 transition-all"
+                          style={{
+                            background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                          }}
                         >
-                          <span>💬</span>
-                          <span>محادثة واتساب للطلب الخاص</span>
+                          <span className="text-base">💬</span>
+                          <span>محادثة واتساب للطلب الخاص المباشر</span>
                         </a>
                       </div>
                     )}
 
                     {/* Suggested Products Mini Cards */}
                     {msg.suggestedProducts && msg.suggestedProducts.length > 0 && (
-                      <div className="mt-3 pt-2.5 border-t border-warm-100 space-y-2">
-                        <p className="text-[11px] font-semibold text-[#542A3A]">القطع المقترحة لكِ:</p>
-                        <div className="space-y-1.5">
+                      <div className="mt-3 pt-3 border-t border-warm-100 space-y-2">
+                        <p className="text-[11.5px] font-semibold text-[#542A3A] flex items-center gap-1.5">
+                          <FiShoppingBag className="w-3.5 h-3.5 text-[#C5A56A]" />
+                          <span>القطع المقترحة لكِ من المتجر:</span>
+                        </p>
+                        <div className="space-y-2">
                           {msg.suggestedProducts.map((p, pIdx) => (
                             <Link
                               key={pIdx}
                               to={`/product/${p.slug}`}
                               onClick={() => setIsOpen(false)}
-                              className="flex items-center gap-2.5 p-2 bg-[#F7F1E8] hover:bg-[#ebdccf] rounded-xl border border-[#E8C7B8] transition-colors group"
+                              className="flex items-center gap-3 p-2 bg-[#F7F1E8] hover:bg-[#efe0d2] rounded-xl border border-[#E8C7B8] transition-all duration-200 group shadow-2xs hover:shadow-xs"
                             >
                               {p.image ? (
                                 <img
                                   src={p.image}
                                   alt={p.name}
-                                  className="w-11 h-11 rounded-lg object-cover flex-shrink-0 border border-[#E8C7B8]"
+                                  className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-[#E8C7B8]"
                                 />
                               ) : (
-                                <div className="w-11 h-11 rounded-lg bg-warm-200 flex items-center justify-center text-warm-500 flex-shrink-0">
+                                <div className="w-12 h-12 rounded-lg bg-warm-200 flex items-center justify-center text-warm-500 flex-shrink-0">
                                   <FiShoppingBag className="w-5 h-5" />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0 text-right">
-                                <p className="text-xs font-semibold text-[#292525] truncate group-hover:text-[#542A3A]">
+                                <p className="text-xs sm:text-sm font-semibold text-[#292525] truncate group-hover:text-[#542A3A] transition-colors">
                                   {p.name}
                                 </p>
-                                <p className="text-[11px] font-semibold text-[#C5A56A] mt-0.5">
+                                <p className="text-[12px] font-bold text-[#C5A56A] mt-0.5">
                                   {p.price}
                                 </p>
                               </div>
-                              <span className="text-[10px] text-[#542A3A] font-medium underline flex-shrink-0">
-                                عرض القطعة
+                              <span className="text-[11px] text-[#542A3A] font-semibold flex items-center gap-1 flex-shrink-0 bg-white/70 px-2 py-1 rounded-md border border-[#E8C7B8]">
+                                <span>عرض</span>
+                                <FiArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
                               </span>
                             </Link>
                           ))}
@@ -356,7 +407,7 @@ const ChatWidget = () => {
 
                     <span
                       className={`block text-[10px] mt-1.5 text-left ${
-                        isUser ? 'text-[#E8C7B8]/70' : 'text-warm-400'
+                        isUser ? 'text-[#E8C7B8]/75' : 'text-warm-400'
                       }`}
                     >
                       {msg.timestamp}
@@ -369,12 +420,21 @@ const ChatWidget = () => {
             {/* Typing Indicator */}
             {isLoading && (
               <div className="flex items-center gap-2 text-right">
-                <div className="bg-white border border-[#E8C7B8] px-3.5 py-2.5 rounded-2xl rounded-bl-xs shadow-xs flex items-center gap-1.5">
-                  <span className="text-xs text-warm-500 font-body">حَبّة تكتب الآن</span>
+                <div className="bg-white border border-[#E8C7B8] px-4 py-3 rounded-2xl rounded-bl-xs shadow-xs flex items-center gap-2">
+                  <span className="text-xs text-warm-600 font-body">حَبّة تفكر الآن</span>
                   <div className="flex gap-1 items-center px-1">
-                    <span className="w-1.5 h-1.5 bg-[#542A3A] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                    <span className="w-1.5 h-1.5 bg-[#542A3A] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-1.5 h-1.5 bg-[#542A3A] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                    <span
+                      className="w-1.5 h-1.5 bg-[#542A3A] rounded-full animate-bounce"
+                      style={{ animationDelay: '0ms' }}
+                    ></span>
+                    <span
+                      className="w-1.5 h-1.5 bg-[#542A3A] rounded-full animate-bounce"
+                      style={{ animationDelay: '150ms' }}
+                    ></span>
+                    <span
+                      className="w-1.5 h-1.5 bg-[#542A3A] rounded-full animate-bounce"
+                      style={{ animationDelay: '300ms' }}
+                    ></span>
                   </div>
                 </div>
               </div>
@@ -383,29 +443,41 @@ const ChatWidget = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Footer */}
-          <div className="p-3 bg-white border-t border-[#E8C7B8] flex items-center gap-2 flex-shrink-0">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="اكتبي سؤالكِ هنا..."
-              disabled={isLoading}
-              maxLength={400}
-              className="flex-1 bg-[#F7F1E8] text-[#292525] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E8C7B8] focus:outline-hidden focus:border-[#542A3A] transition-colors disabled:opacity-50 placeholder:text-warm-400 font-body text-right"
-              style={{ fontSize: '14px' }}
-            />
-            <button
-              onClick={() => handleSend()}
-              disabled={!inputMessage.trim() || isLoading}
-              className="p-2.5 rounded-xl text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 shadow-xs active:scale-95"
-              style={{ backgroundColor: '#542A3A' }}
-              aria-label="إرسال"
-            >
-              <FiSend className="h-4 w-4 rotate-180" />
-            </button>
+          {/* ── Input Cockpit ── */}
+          <div className="p-3 bg-white/95 backdrop-blur-md border-t border-[#E8C7B8] flex flex-col gap-1.5 flex-shrink-0 shadow-lg">
+            <div className="flex items-center gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="اكتبي سؤالكِ هنا (مثال: أحدث الشنط، التوصيل)..."
+                disabled={isLoading}
+                maxLength={400}
+                className="flex-1 bg-[#F7F1E8] text-[#292525] text-sm px-4 py-2.5 sm:py-3 rounded-2xl border border-[#E8C7B8] focus:outline-hidden focus:border-[#542A3A] transition-all disabled:opacity-50 placeholder:text-warm-400 font-body text-right"
+                style={{ fontSize: '15px' }}
+              />
+              <button
+                onClick={() => handleSend()}
+                disabled={!inputMessage.trim() || isLoading}
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 shadow-md active:scale-95 hover:brightness-110"
+                style={{ backgroundColor: '#542A3A', border: '1px solid #C5A56A' }}
+                aria-label="إرسال"
+              >
+                <FiSend className="h-4 w-4 sm:h-5 sm:w-5 rotate-180" />
+              </button>
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-warm-400 px-1 font-light">
+              <span>«حَبّة ورا حَبّة، حكاية بتتعمل» 🤍</span>
+              <button
+                onClick={handleNewChat}
+                className="text-[#542A3A] hover:underline flex items-center gap-1 font-medium"
+              >
+                <FiRotateCcw className="w-2.5 h-2.5" />
+                <span>إعادة ضبط المحادثة</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -413,20 +485,22 @@ const ChatWidget = () => {
       {/* ── Main Floating Action Button (FAB) ── */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative group w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-90"
-        style={{ backgroundColor: '#542A3A', border: '2px solid #C5A56A' }}
+        className="relative group w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white shadow-2xl hover:shadow-3xl transition-all duration-300 active:scale-90"
+        style={{
+          background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
+          border: '2px solid #C5A56A',
+        }}
         aria-label={isOpen ? 'إغلاق المساعد' : 'فتح المساعد الذكي'}
       >
         {isOpen ? (
-          <FiX className="h-6 w-6 transition-transform group-hover:rotate-90" />
+          <FiX className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:rotate-90" />
         ) : (
           <>
-            <FiMessageCircle className="h-7 w-7 transition-transform group-hover:scale-110" />
-            {/* Unread indicator dot */}
+            <FiMessageCircle className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:scale-110" />
             {hasUnread && (
               <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-rose-500 border-2 border-[#542A3A] rounded-full animate-ping"></span>
             )}
-            <span className="absolute top-1 right-1 w-3 h-3 bg-amber-400 border-2 border-[#542A3A] rounded-full"></span>
+            <span className="absolute top-1 right-1 w-3 h-3 bg-amber-400 border-2 border-[#542A3A] rounded-full shadow-sm"></span>
           </>
         )}
       </button>
