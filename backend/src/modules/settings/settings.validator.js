@@ -14,7 +14,8 @@ const updateSettingsSchema = Joi.object({
     'string.pattern.base': 'WhatsApp number must be in E.164 format (e.g., +20123456789)'
   }),
   defaultCurrency: Joi.string().length(3).allow(''),
-  aiInstructions: Joi.string().max(10000).allow('')
+  aiInstructions: Joi.string().max(10000).allow(''),
+  aiApiKey: Joi.string().trim().max(300).allow('')
 });
 
 module.exports = {

@@ -42,6 +42,7 @@ const SettingsPage = () => {
           visualStyle: res.data.visualStyle || 'warm, minimal, elegant',
           imageStyle: res.data.imageStyle || '',
           aiInstructions: res.data.aiInstructions || '',
+          aiApiKey: res.data.aiApiKey || '',
         });
       }
     } catch (err) {
@@ -212,6 +213,21 @@ const SettingsPage = () => {
                 placeholder="Guidelines for AI when writing copy for products..."
                 className="w-full p-2.5 border border-warm-300 rounded-md focus:ring-brand-500 focus:border-brand-500 text-sm"
               />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-warm-700 mb-1">AI API Key (Google Gemini أو OpenAI)</label>
+              <input
+                type="password"
+                name="aiApiKey"
+                value={formData.aiApiKey || ''}
+                onChange={handleChange}
+                placeholder="أدخل مفتاح Gemini (AIzaSy...) أو OpenAI (sk-...)"
+                className="w-full p-2.5 border border-warm-300 rounded-md focus:ring-brand-500 focus:border-brand-500 text-sm font-mono"
+              />
+              <p className="text-xs text-warm-500 mt-1">
+                لتشغيل شات المساعد الذكي وتوليد المحتوى بالذكاء الاصطناعي الحقيقي. يُفضل استخدام مفتاح مجاني من Google AI Studio (Gemini 1.5 Flash).
+              </p>
             </div>
           </div>
         </div>

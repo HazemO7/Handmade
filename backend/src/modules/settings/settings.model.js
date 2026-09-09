@@ -117,6 +117,11 @@ const brandSettingsSchema = new mongoose.Schema(
       type: String,
       default: defaultAiInstructions,
     },
+    aiApiKey: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   {
     timestamps: true,

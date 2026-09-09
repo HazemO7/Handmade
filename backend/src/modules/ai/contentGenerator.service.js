@@ -33,18 +33,20 @@ const generateContent = async (productBasicInfo, brandSettings) => {
       }
     `.trim();
 
+    const effectiveApiKey = (brandSettings?.aiApiKey || env.AI_API_KEY || '').trim();
+
     // If no real API key is provided or mock mode
-    if (!env.AI_API_KEY || env.AI_API_KEY === 'mock_api_key' || env.NODE_ENV === 'test') {
+    if (!effectiveApiKey || effectiveApiKey === 'mock_api_key' || env.NODE_ENV === 'test') {
       console.log(`[AI Mock] Generating content for product: ${productBasicInfo.name}`);
       await new Promise(resolve => setTimeout(resolve, 1500));
       return getFallbackContent(productBasicInfo, brandSettings);
     }
 
     // Check if it's an OpenAI key (sk-...)
-    if (env.AI_API_KEY.startsWith('sk-')) {
+    if (effectiveApiKey.startsWith('sk-')) {
       try {
         const OpenAI = require('openai');
-        const openai = new OpenAI({ apiKey: env.AI_API_KEY });
+        const openai = new OpenAI({ apiKey: effectiveApiKey });
         const response = await openai.chat.completions.create({
           model: 'gpt-4o-mini',
           response_format: { type: 'json_object' },
@@ -63,7 +65,7 @@ const generateContent = async (productBasicInfo, brandSettings) => {
     // Otherwise, treat as Google Gemini API key
     try {
       console.log(`[Gemini AI] Generating content for ${productBasicInfo.name}...`);
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${env.AI_API_KEY}`;
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${effectiveApiKey}`;
       const response = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

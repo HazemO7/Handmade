@@ -136,8 +136,9 @@ const handleChatMessage = async ({ message, history = [] }) => {
     ? catalogSummary.map(p => `- ${p.name} | السعر: ${p.price} | الرابط: /product/${p.slug} | الخامات: ${p.materials} | الأبعاد: ${p.dimensions || 'غير محدد'}`).join('\n')
     : 'حالياً جاري تحديث قائمة المنتجات المعروضة.';
 
-  // 2. Check if AI_API_KEY is configured
-  if (!env.AI_API_KEY || env.AI_API_KEY === 'mock_api_key' || env.NODE_ENV === 'test') {
+  // 2. Check if AI API Key is configured (from Settings DB or env)
+  const effectiveApiKey = (settings?.aiApiKey || env.AI_API_KEY || '').trim();
+  if (!effectiveApiKey || effectiveApiKey === 'mock_api_key' || env.NODE_ENV === 'test') {
     const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
     return {
       ...fallback,
@@ -164,8 +165,8 @@ ${catalogContextText}
 
 ### تعليمات الإجابة:
 1. أجب باختصار ولطافة ورقي باللغة العربية (أو بالإنجليزية إذا سأل العميل بالإنجليزية).
-2. عند السؤال عن الأسعار أو المنتجات، اذكر الأسعار من الكتالوج أعلاه بوضوح.
-3. إذا أراد العميل تعديل مقاس أو لون أو تصميم خاص (Custom Order)، رحب بالفكرة وشجعه وأخبره بإمكانية التواصل فوراً عبر واتساب لتحديد المواصفات.
+2. عندما يسأل العميل من أنت (مثل "انت مين" أو "who are you")، عرّف بنفسك بلطف بأنك المساعد الذكي لبراند حَبّة، لمساعدتهم في اختيار القطع اليدوية ومعرفة الأسعار ومتابعة طلبات التفصيل والشحن.
+3. عند السؤال عن منتج غير موجود بالكتالوج (مثل "شنط أطفال")، وضح بلطف أن المتجر حالياً متخصص في شنط السهرة والمناسبات والإكسسوارات اليدوية، ولكن يمكن تفصيل شنطة أطفال بمقاس وألوان مخصصة تماماً حسب رغبتهم عبر طلب تفصيل خاص على واتساب.
 4. إخراجك النهائي يجب أن يكون بتنسيق JSON صحيح فقط لا غير، وبدون علامات كود ماركداون، وفق الهيكل التالي:
 {
   "reply": "نص إجابتك هنا بأسلوب حَبّة الدافئ والواضح",
@@ -176,10 +177,10 @@ ${catalogContextText}
 `.trim();
 
   // 4. Try OpenAI
-  if (env.AI_API_KEY.startsWith('sk-')) {
+  if (effectiveApiKey.startsWith('sk-')) {
     try {
       const OpenAI = require('openai');
-      const openai = new OpenAI({ apiKey: env.AI_API_KEY });
+      const openai = new OpenAI({ apiKey: effectiveApiKey });
 
       const messages = [
         { role: 'system', content: systemPrompt },
@@ -217,7 +218,7 @@ ${catalogContextText}
 
   // 5. Try Google Gemini
   try {
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${env.AI_API_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${effectiveApiKey}`;
     
     const formattedContents = [
       {
