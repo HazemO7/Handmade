@@ -18,6 +18,7 @@ const productRoutes = require('../modules/products/product.routes');
 const mediaRoutes = require('../modules/media/media.routes');
 const aiRoutes = require('../modules/ai/ai.routes');
 const settingsRoutes = require('../modules/settings/settings.routes');
+const chatRoutes = require('../modules/chat/chat.routes');
 
 // --------------- Module Routes ---------------
 const authRoutes = require('../modules/auth/auth.routes');
@@ -27,6 +28,7 @@ router.use('/products', productRoutes);
 router.use('/media', mediaRoutes);
 router.use('/ai', aiRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/chat', chatRoutes);
 
 // --------------- Test Route (Development only) ---------------
 if (env.NODE_ENV === 'development') {

@@ -108,4 +108,8 @@ export const settingsApi = {
   updateSettings: (data) => api.patch('/settings', data),
 };
 
+export const chatApi = {
+  sendMessage: (data) => api.post('/chat', data),
+};
+
 export default api;

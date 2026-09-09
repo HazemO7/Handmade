@@ -5,6 +5,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import ScrollToTop from './components/common/ScrollToTop';
+import ChatWidget from './components/chat/ChatWidget';
 
 // Pages
 import Home from './pages/Home';
@@ -37,6 +38,7 @@ const App = () => {
   return (
     <div className="flex flex-col min-h-screen font-body text-warm-800 bg-warm-50">
       <ScrollToTop />
+      <ChatWidget />
       <Routes>
         {/* Public Routes - Wrapped in Header/Footer */}
         <Route path="/" element={
