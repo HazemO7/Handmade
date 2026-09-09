@@ -22,7 +22,13 @@ const env = {
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
 
   // AI
-  AI_API_KEY: process.env.AI_API_KEY || '',
+  AI_API_KEY:
+    process.env.AI_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_AI_KEY ||
+    '',
 
   // WhatsApp (default, overridden by BrandSettings in DB)
   WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER || '',
