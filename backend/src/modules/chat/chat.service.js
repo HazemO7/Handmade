@@ -275,8 +275,6 @@ ${catalogContextText}
 
   // 5. Try Google Gemini
   try {
-    let geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`;
-
     const geminiPayload = {
       systemInstruction: {
         parts: [{ text: systemPrompt }],
@@ -292,44 +290,34 @@ ${catalogContextText}
       },
     };
 
-    let response = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiPayload),
-    });
+    let response = null;
+    const modelCandidates = [
+      'gemini-3.6-flash',
+      'gemini-2.0-flash',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-flash',
+      'gemini-pro',
+    ];
 
-    // If 404, discover available models for this key dynamically via ListModels
-    if (response.status === 404) {
-      try {
-        const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanApiKey}`);
-        if (listRes.ok) {
-          const listData = await listRes.json();
-          const validModel = listData.models?.find(m => 
-            m.supportedGenerationMethods?.includes('generateContent') &&
-            (m.name.includes('flash') || m.name.includes('pro'))
-          ) || listData.models?.find(m => m.supportedGenerationMethods?.includes('generateContent'));
+    for (const model of modelCandidates) {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanApiKey}`;
+      const res = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiPayload),
+      });
 
-          if (validModel && validModel.name) {
-            const modelName = validModel.name.replace('models/', '');
-            geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanApiKey}`;
-            response = await fetch(geminiUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(geminiPayload),
-            });
-          }
-        } else {
-          // Try v1 endpoint as fallback
-          geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`;
-          response = await fetch(geminiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(geminiPayload),
-          });
-        }
-      } catch (e) {
-        console.warn('Dynamic model discovery error:', e.message);
+      if (res.ok) {
+        response = res;
+        break;
       }
+
+      // If it's not a 404/deprecation (e.g. 400 invalid key), stop looping
+      if (res.status !== 404) {
+        response = res;
+        break;
+      }
+      response = res;
     }
 
     if (!response.ok) {
