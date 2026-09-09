@@ -145,14 +145,6 @@ const handleChatMessage = async ({ message, history = [] }) => {
     return {
       ...fallback,
       whatsappUrl,
-      _debug: {
-        reason: 'no_or_mock_key',
-        hasKey: Boolean(cleanApiKey),
-        keyPrefix: cleanApiKey ? cleanApiKey.substring(0, 6) : 'none',
-        envKey: Boolean(env.AI_API_KEY),
-        dbKey: Boolean(settings?.aiApiKey),
-        nodeEnv: env.NODE_ENV,
-      },
     };
   }
 
@@ -320,20 +312,9 @@ ${catalogContextText}
       response = res;
     }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.warn(`[Gemini Chat API error (${response.status})]:`, errorText);
+    if (!response || !response.ok) {
       const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
-      return {
-        ...fallback,
-        whatsappUrl,
-        _debug: {
-          reason: 'gemini_api_error',
-          status: response.status,
-          error: errorText,
-          keyPrefix: cleanApiKey ? cleanApiKey.substring(0, 6) : 'none',
-        },
-      };
+      return { ...fallback, whatsappUrl };
     }
 
     const data = await response.json();
@@ -344,25 +325,11 @@ ${catalogContextText}
     }
 
     const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
-    return {
-      ...fallback,
-      whatsappUrl,
-      _debug: {
-        reason: 'extracted_empty',
-        rawText,
-      },
-    };
+    return { ...fallback, whatsappUrl };
   } catch (err) {
     console.warn('[Chat AI Gemini error, using fallback]:', err.message);
     const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
-    return {
-      ...fallback,
-      whatsappUrl,
-      _debug: {
-        reason: 'gemini_exception',
-        error: err.message,
-      },
-    };
+    return { ...fallback, whatsappUrl };
   }
 };
 
