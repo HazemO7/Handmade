@@ -137,14 +137,71 @@ const handleChatMessage = async ({ message, history = [] }) => {
     : 'حالياً جاري تحديث قائمة المنتجات المعروضة.';
 
   // 2. Check if AI API Key is configured (from Settings DB or env)
-  const effectiveApiKey = (settings?.aiApiKey || env.AI_API_KEY || '').trim();
-  if (!effectiveApiKey || effectiveApiKey === 'mock_api_key' || env.NODE_ENV === 'test') {
+  const rawKey = settings?.aiApiKey || env.AI_API_KEY || '';
+  const cleanApiKey = rawKey.replace(/['"]/g, '').trim();
+
+  if (!cleanApiKey || cleanApiKey === 'mock_api_key' || env.NODE_ENV === 'test') {
     const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
     return {
       ...fallback,
       whatsappUrl,
     };
   }
+
+  // Helper to extract reply text, suggested products, and custom order flag from AI output
+  const extractResponseData = (rawOutput) => {
+    if (!rawOutput) return null;
+    let replyText = '';
+    let suggestedSlugs = [];
+    let isCustomOrder = false;
+
+    // Strip markdown code fence if present (e.g. ```json ... ```)
+    const cleaned = rawOutput
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+
+    try {
+      if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+        const parsed = JSON.parse(cleaned);
+        replyText = parsed.reply || '';
+        suggestedSlugs = Array.isArray(parsed.suggestedProductSlugs) ? parsed.suggestedProductSlugs : [];
+        isCustomOrder = Boolean(parsed.isCustomOrder);
+      } else {
+        replyText = rawOutput;
+      }
+    } catch {
+      replyText = rawOutput;
+    }
+
+    if (!replyText.trim()) {
+      replyText = rawOutput;
+    }
+
+    // Auto-detect custom order if mentioned
+    if (
+      message.includes('تفصيل') ||
+      message.includes('طلب خاص') ||
+      replyText.includes('واتساب') ||
+      replyText.includes('تفصيل')
+    ) {
+      isCustomOrder = true;
+    }
+
+    // Match products by slug or by name mentioned in the reply text
+    const matchedProducts = catalogSummary.filter(p => {
+      if (suggestedSlugs.includes(p.slug)) return true;
+      if (p.name && replyText.toLowerCase().includes(p.name.toLowerCase())) return true;
+      return false;
+    });
+
+    return {
+      reply: replyText,
+      suggestedProducts: matchedProducts,
+      isCustomOrder,
+      whatsappUrl,
+    };
+  };
 
   // 3. System Prompt for HABA Shopping Assistant
   const systemPrompt = `
@@ -153,34 +210,34 @@ const handleChatMessage = async ({ message, history = [] }) => {
 ### هوية وشخصية حَبّة:
 - لهجتك وأسلوبك: دافئ، مهذب جداً، راقي، مصري ودود يرحب بالعملاء بذوق رفيع وأنوثة وأناقة تعكس هوية البراند.
 - الشعار الأساسي: «حَبّة ورا حَبّة، حكاية بتتعمل» (كل قطعة مصنوعة يدوياً 100% بالصبر ولمسة يد فنانة بدون أي ماكينات).
-- الخامات: نستخدم خرز عالي الجودة ونقي وخيوط صيد مقواة فائقة المتانة.
+- الخامات: نستخدم خرز عالي الجودة ونقي وخيوط صيد مقواة فائقة المتانة ومقاومة للقطع.
 
 ### معلومات الشحن والتوصيل:
 - التوصيل داخل القاهرة والجيزة: 2 إلى 3 أيام عمل.
 - باقي المحافظات: 3 إلى 5 أيام عمل.
-- الطلبات الخاصة (التفصيل): تأخذ 5 إلى 7 أيام عمل للتنفيذ اليدوي المتقن.
+- الطلبات الخاصة (التفصيل): تأخذ 5 إلى 7 أيام عمل للتنفيذ اليدوي المتقن خرزة بخرزة.
 
 ### كتالوج المنتجات الحالي في المتجر:
 ${catalogContextText}
 
 ### تعليمات الإجابة:
-1. أجب باختصار ولطافة ورقي باللغة العربية (أو بالإنجليزية إذا سأل العميل بالإنجليزية).
-2. عندما يسأل العميل من أنت (مثل "انت مين" أو "who are you")، عرّف بنفسك بلطف بأنك المساعد الذكي لبراند حَبّة، لمساعدتهم في اختيار القطع اليدوية ومعرفة الأسعار ومتابعة طلبات التفصيل والشحن.
-3. عند السؤال عن منتج غير موجود بالكتالوج (مثل "شنط أطفال")، وضح بلطف أن المتجر حالياً متخصص في شنط السهرة والمناسبات والإكسسوارات اليدوية، ولكن يمكن تفصيل شنطة أطفال بمقاس وألوان مخصصة تماماً حسب رغبتهم عبر طلب تفصيل خاص على واتساب.
-4. إخراجك النهائي يجب أن يكون بتنسيق JSON صحيح فقط لا غير، وبدون علامات كود ماركداون، وفق الهيكل التالي:
+1. أجب بأسلوب ودود ولطيف ومختصر باللغة العربية (أو بالإنجليزية إذا سأل العميل بالإنجليزية).
+2. عندما يسأل العميل من أنت (مثل "انت مين" أو "who are you")، عرّف بنفسك بلطف بأنك مساعد حَبّة الذكي لمساعدتهم في اختيار القطع أو الإجابة عن الأسعار ومتابعة طلبات التفصيل والشحن.
+3. عند السؤال عن منتج غير موجود بالكتالوج (مثل "شنط أطفال")، وضح بلطف أن المتجر حالياً يعرض هذه التشكيلة، ولكن يمكن تنفيذ أي قطعة مخصصة حسب المقاس واللون المفضل عبر طلب تفصيل خاص على واتساب.
+4. إذا سأل العميل سؤالاً عاماً أو عبر عن انزعاجه، اعتذر بلطف وكن ودوداً جداً وقدم له المساعدة فوراً.
+5. يمكنك الرد إما بنص مباشر راقي، أو بتنسيق JSON بالشكل التالي:
 {
   "reply": "نص إجابتك هنا بأسلوب حَبّة الدافئ والواضح",
-  "suggestedProductSlugs": ["slug1", "slug2"],
+  "suggestedProductSlugs": ["slug1"],
   "isCustomOrder": false
 }
-(ضع في suggestedProductSlugs روابط slug للمنتجات المذكورة في ردك إن وجدت، واجعل isCustomOrder قيمتها true إذا كان الاستفسار عن تفصيل أو تصميم خاص).
 `.trim();
 
   // 4. Try OpenAI
-  if (effectiveApiKey.startsWith('sk-')) {
+  if (cleanApiKey.startsWith('sk-')) {
     try {
       const OpenAI = require('openai');
-      const openai = new OpenAI({ apiKey: effectiveApiKey });
+      const openai = new OpenAI({ apiKey: cleanApiKey });
 
       const messages = [
         { role: 'system', content: systemPrompt },
@@ -193,22 +250,14 @@ ${catalogContextText}
 
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
-        response_format: { type: 'json_object' },
         messages,
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 600,
       });
 
-      const parsed = JSON.parse(completion.choices[0].message.content);
-      const suggestedSlugs = Array.isArray(parsed.suggestedProductSlugs) ? parsed.suggestedProductSlugs : [];
-      const suggestedProducts = catalogSummary.filter(p => suggestedSlugs.includes(p.slug));
-
-      return {
-        reply: parsed.reply || 'أهلاً بكِ في حَبّة! كيف يمكنني مساعدتكِ اليوم؟',
-        suggestedProducts,
-        isCustomOrder: Boolean(parsed.isCustomOrder),
-        whatsappUrl,
-      };
+      const raw = completion.choices?.[0]?.message?.content || '';
+      const extracted = extractResponseData(raw);
+      if (extracted) return extracted;
     } catch (err) {
       console.warn('[Chat AI OpenAI error, using fallback]:', err.message);
       const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
@@ -218,25 +267,27 @@ ${catalogContextText}
 
   // 5. Try Google Gemini
   try {
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${effectiveApiKey}`;
-    
-    const formattedContents = [
-      {
-        role: 'user',
-        parts: [{ text: `${systemPrompt}\n\nالسؤال الحالي: ${message}` }],
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`;
+
+    const geminiPayload = {
+      systemInstruction: {
+        parts: [{ text: systemPrompt }],
       },
-    ];
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: message }],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.7,
+      },
+    };
 
     const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: formattedContents,
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.7,
-        },
-      }),
+      body: JSON.stringify(geminiPayload),
     });
 
     if (!response.ok) {
@@ -247,18 +298,14 @@ ${catalogContextText}
     }
 
     const data = await response.json();
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    const parsed = JSON.parse(rawText);
+    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const extracted = extractResponseData(rawText);
+    if (extracted && extracted.reply) {
+      return extracted;
+    }
 
-    const suggestedSlugs = Array.isArray(parsed.suggestedProductSlugs) ? parsed.suggestedProductSlugs : [];
-    const suggestedProducts = catalogSummary.filter(p => suggestedSlugs.includes(p.slug));
-
-    return {
-      reply: parsed.reply || 'أهلاً بكِ في حَبّة! كيف يمكنني مساعدتكِ اليوم؟',
-      suggestedProducts,
-      isCustomOrder: Boolean(parsed.isCustomOrder),
-      whatsappUrl,
-    };
+    const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
+    return { ...fallback, whatsappUrl };
   } catch (err) {
     console.warn('[Chat AI Gemini error, using fallback]:', err.message);
     const fallback = getFallbackReply(message, catalogSummary, whatsappUrl);
