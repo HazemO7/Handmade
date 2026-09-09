@@ -275,7 +275,7 @@ ${catalogContextText}
 
   // 5. Try Google Gemini
   try {
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`;
+    let geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`;
 
     const geminiPayload = {
       systemInstruction: {
@@ -292,11 +292,45 @@ ${catalogContextText}
       },
     };
 
-    const response = await fetch(geminiUrl, {
+    let response = await fetch(geminiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(geminiPayload),
     });
+
+    // If 404, discover available models for this key dynamically via ListModels
+    if (response.status === 404) {
+      try {
+        const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanApiKey}`);
+        if (listRes.ok) {
+          const listData = await listRes.json();
+          const validModel = listData.models?.find(m => 
+            m.supportedGenerationMethods?.includes('generateContent') &&
+            (m.name.includes('flash') || m.name.includes('pro'))
+          ) || listData.models?.find(m => m.supportedGenerationMethods?.includes('generateContent'));
+
+          if (validModel && validModel.name) {
+            const modelName = validModel.name.replace('models/', '');
+            geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanApiKey}`;
+            response = await fetch(geminiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(geminiPayload),
+            });
+          }
+        } else {
+          // Try v1 endpoint as fallback
+          geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${cleanApiKey}`;
+          response = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(geminiPayload),
+          });
+        }
+      } catch (e) {
+        console.warn('Dynamic model discovery error:', e.message);
+      }
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
