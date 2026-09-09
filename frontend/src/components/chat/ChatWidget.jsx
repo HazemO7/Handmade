@@ -7,6 +7,7 @@ import {
   FiRotateCcw,
   FiShoppingBag,
   FiArrowLeft,
+  FiArrowRight,
   FiExternalLink,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -78,6 +79,17 @@ const ChatWidget = () => {
       setShowTeaser(false);
       setHasUnread(false);
       setTimeout(() => inputRef.current?.focus(), 250);
+    }
+  }, [isOpen]);
+
+  // Lock background body scroll on mobile when chat is open
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined' && window.innerWidth < 640) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
     }
   }, [isOpen]);
 
@@ -188,7 +200,11 @@ const ChatWidget = () => {
   return (
     <aside
       aria-label="مساعد حَبّة الذكي"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 font-body"
+      className={`fixed z-50 font-body ${
+        isOpen
+          ? 'inset-0 sm:inset-auto sm:bottom-6 sm:right-6 pointer-events-none'
+          : 'bottom-4 right-4 sm:bottom-6 sm:right-6'
+      }`}
       style={{ direction: 'rtl' }}
     >
       {/* ── Teaser Floating Tooltip on First Load ── */}
@@ -197,7 +213,7 @@ const ChatWidget = () => {
           role="status"
           aria-live="polite"
           onClick={() => setIsOpen(true)}
-          className="cursor-pointer absolute bottom-16 right-0 mb-2 w-72 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-[#E8C7B8] text-right text-xs transition-all duration-300 hover:scale-[1.02] active:scale-95 animate-bounce-subtle"
+          className="cursor-pointer absolute bottom-16 right-0 mb-2 w-[calc(100vw-2.5rem)] max-w-xs sm:w-72 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-[#E8C7B8] text-right text-xs transition-all duration-300 hover:scale-[1.02] active:scale-95 animate-bounce-subtle"
         >
           <button
             onClick={(e) => {
@@ -228,62 +244,70 @@ const ChatWidget = () => {
       {/* ── Chat Window (Ultra Responsive for Mobile & Desktop) ── */}
       {isOpen && (
         <div
-          className="fixed inset-x-2.5 bottom-2.5 top-16 sm:top-auto sm:inset-auto sm:absolute sm:bottom-20 sm:right-0 sm:w-[410px] sm:h-[620px] sm:max-h-[85vh] flex flex-col bg-[#F7F1E8] rounded-3xl sm:rounded-3xl shadow-2xl border border-[#E8C7B8]/90 overflow-hidden transition-all duration-300 animate-fadeIn"
+          className="pointer-events-auto fixed inset-0 sm:inset-auto sm:bottom-20 sm:right-0 w-full sm:w-[410px] h-[100dvh] sm:h-[620px] sm:max-h-[85vh] flex flex-col bg-[#F7F1E8] sm:rounded-3xl shadow-2xl border-0 sm:border sm:border-[#E8C7B8]/90 overflow-hidden transition-all duration-300 animate-fadeIn"
         >
           {/* ── Header ── */}
           <div
-            className="px-4 py-3.5 flex items-center justify-between text-white flex-shrink-0 shadow-md relative"
+            className="px-3.5 sm:px-4 py-3 sm:py-3.5 flex items-center justify-between text-white flex-shrink-0 shadow-md relative z-10"
             style={{
               background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
               borderBottom: '1px solid rgba(197, 165, 106, 0.35)',
+              paddingTop: 'max(0.75rem, env(safe-area-inset-top))',
             }}
           >
-            {/* Brand identity */}
-            <div className="flex items-center gap-3">
+            {/* Brand identity & Back/Close button */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Back / Close button for mobile (RTL back arrow) */}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="sm:hidden p-2 -mr-1 text-[#E8C7B8] hover:text-white active:bg-white/20 active:scale-95 rounded-full transition-colors flex items-center justify-center"
+                title="الرجوع وإغلاق"
+                aria-label="الرجوع وإغلاق المحادثة"
+              >
+                <FiArrowRight className="h-5 w-5" />
+              </button>
+
               <div className="relative flex-shrink-0">
                 <img
                   src="/logo-mark.png"
                   alt="HABA"
-                  className="w-10 h-10 rounded-full object-cover border border-[#C5A56A] bg-[#F7F1E8] p-0.5 shadow-sm"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-[#C5A56A] bg-[#F7F1E8] p-0.5 shadow-sm"
                   onError={(e) => {
                     e.currentTarget.src = '/favicon-32x32.png';
                   }}
                 />
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-[#542A3A] rounded-full"></span>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-400 border-2 border-[#542A3A] rounded-full"></span>
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <h3 className="font-heading font-semibold text-base sm:text-lg text-[#F7F1E8] leading-tight">
                     مساعد حَبّة الذكي
                   </h3>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#C5A56A]/25 text-[#E8C7B8] font-body tracking-wider border border-[#C5A56A]/30">
+                  <span className="text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-[#C5A56A]/25 text-[#E8C7B8] font-body tracking-wider border border-[#C5A56A]/30">
                     AI
                   </span>
                 </div>
                 <p className="text-[11px] text-[#E8C7B8]/90 flex items-center gap-1 mt-0.5 font-light">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-                  متصل الآن · الرد لحظي
+                  متصل الآن · الرد فوري
                 </p>
               </div>
             </div>
 
-            {/* Header Actions: Clear/New Chat + Close */}
-            <div className="flex items-center gap-1.5">
-              {/* CLEAR / NEW CHAT BUTTON — Highly Visible and Clear */}
+            {/* Header Actions: New Chat + Desktop Close */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={handleNewChat}
-                className="flex items-center gap-1.5 text-xs bg-white/15 hover:bg-white/25 active:scale-95 text-[#F7F1E8] px-2.5 py-1.5 rounded-full border border-white/20 transition-all font-body shadow-xs"
+                className="flex items-center gap-1.5 text-xs bg-white/15 hover:bg-white/25 active:scale-95 text-[#F7F1E8] px-2.5 sm:px-3 py-1.5 rounded-full border border-white/20 transition-all font-body shadow-xs"
                 title="بدء محادثة جديدة"
               >
                 <FiRotateCcw className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium hidden sm:inline">محادثة جديدة</span>
-                <span className="text-[11px] font-medium sm:hidden">جديدة</span>
+                <span className="text-[11px] sm:text-xs font-medium">محادثة جديدة</span>
               </button>
 
-              {/* Close Button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-[#E8C7B8] hover:text-white hover:bg-white/15 active:scale-95 rounded-full transition-colors"
+                className="hidden sm:flex p-1.5 text-[#E8C7B8] hover:text-white hover:bg-white/15 active:scale-95 rounded-full transition-colors"
                 title="إغلاق الدردشة"
                 aria-label="إغلاق"
               >
@@ -293,10 +317,13 @@ const ChatWidget = () => {
           </div>
 
           {/* ── Messages Body ── */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm bg-gradient-to-b from-[#F7F1E8] via-[#F4ECE3] to-[#efe3d5]">
+          <div
+            className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3.5 sm:space-y-4 text-sm bg-gradient-to-b from-[#F7F1E8] via-[#F4ECE3] to-[#efe3d5] overscroll-contain"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
             {/* Quick action chips bar */}
-            <div className="space-y-2 pb-1">
-              <div className="flex items-center justify-between">
+            <div className="space-y-1.5 pb-1">
+              <div className="flex items-center justify-between px-0.5">
                 <span className="text-[11.5px] text-warm-600 font-medium">
                   استفسارات سريعة بضغطة واحدة:
                 </span>
@@ -310,13 +337,14 @@ const ChatWidget = () => {
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              {/* Sleek horizontal swipeable chips on mobile, flex-wrap on desktop */}
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 pt-0.5 sm:flex-wrap flex-nowrap">
                 {QUICK_PROMPTS.map((prompt, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSend(prompt.query)}
                     disabled={isLoading}
-                    className="text-xs bg-white/95 hover:bg-[#542A3A] hover:text-white text-[#542A3A] px-3 py-1.5 rounded-full border border-[#E8C7B8] shadow-xs hover:shadow-sm transition-all duration-200 text-right font-body active:scale-95 disabled:opacity-50"
+                    className="shrink-0 sm:shrink text-xs bg-white/95 hover:bg-[#542A3A] hover:text-white text-[#542A3A] px-3.5 py-1.5 rounded-full border border-[#E8C7B8] shadow-xs hover:shadow-sm transition-all duration-200 text-right font-body active:scale-95 disabled:opacity-50 whitespace-nowrap"
                   >
                     {prompt.text}
                   </button>
@@ -333,7 +361,7 @@ const ChatWidget = () => {
                   className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} transition-all`}
                 >
                   <div
-                    className={`max-w-[88%] sm:max-w-[85%] rounded-2xl px-4 py-3 leading-relaxed text-right transition-all shadow-xs ${
+                    className={`max-w-[88%] sm:max-w-[85%] rounded-2xl px-3.5 sm:px-4 py-2.5 sm:py-3 leading-relaxed text-right transition-all shadow-xs ${
                       isUser
                         ? 'bg-[#542A3A] text-[#F7F1E8] rounded-br-xs shadow-md'
                         : 'bg-white text-[#292525] border border-[#E8C7B8] rounded-bl-xs'
@@ -374,7 +402,7 @@ const ChatWidget = () => {
                               key={pIdx}
                               to={`/product/${p.slug}`}
                               onClick={() => setIsOpen(false)}
-                              className="flex items-center gap-3 p-2 bg-[#F7F1E8] hover:bg-[#efe0d2] rounded-xl border border-[#E8C7B8] transition-all duration-200 group shadow-2xs hover:shadow-xs"
+                              className="flex items-center gap-2.5 sm:gap-3 p-2 bg-[#F7F1E8] hover:bg-[#efe0d2] rounded-xl border border-[#E8C7B8] transition-all duration-200 group shadow-2xs hover:shadow-xs"
                             >
                               {p.image ? (
                                 <img
@@ -444,7 +472,12 @@ const ChatWidget = () => {
           </div>
 
           {/* ── Input Cockpit ── */}
-          <div className="p-3 bg-white/95 backdrop-blur-md border-t border-[#E8C7B8] flex flex-col gap-1.5 flex-shrink-0 shadow-lg">
+          <div
+            className="p-3 sm:p-3.5 bg-white/95 backdrop-blur-md border-t border-[#E8C7B8] flex flex-col gap-1.5 flex-shrink-0 shadow-lg"
+            style={{
+              paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))',
+            }}
+          >
             <div className="flex items-center gap-2">
               <input
                 ref={inputRef}
@@ -455,8 +488,8 @@ const ChatWidget = () => {
                 placeholder="اكتبي سؤالكِ هنا (مثال: أحدث الشنط، التوصيل)..."
                 disabled={isLoading}
                 maxLength={400}
-                className="flex-1 bg-[#F7F1E8] text-[#292525] text-sm px-4 py-2.5 sm:py-3 rounded-2xl border border-[#E8C7B8] focus:outline-hidden focus:border-[#542A3A] transition-all disabled:opacity-50 placeholder:text-warm-400 font-body text-right"
-                style={{ fontSize: '15px' }}
+                className="flex-1 bg-[#F7F1E8] text-[#292525] text-base sm:text-sm px-4 py-2.5 sm:py-3 rounded-2xl border border-[#E8C7B8] focus:outline-hidden focus:border-[#542A3A] transition-all disabled:opacity-50 placeholder:text-warm-400 font-body text-right"
+                style={{ fontSize: '16px' }}
               />
               <button
                 onClick={() => handleSend()}
@@ -468,7 +501,7 @@ const ChatWidget = () => {
                 <FiSend className="h-4 w-4 sm:h-5 sm:w-5 rotate-180" />
               </button>
             </div>
-            <div className="flex items-center justify-between text-[10px] text-warm-400 px-1 font-light">
+            <div className="flex items-center justify-between text-[10px] text-warm-500 px-1 font-light">
               <span>«حَبّة ورا حَبّة، حكاية بتتعمل» 🤍</span>
               <button
                 onClick={handleNewChat}
@@ -485,7 +518,9 @@ const ChatWidget = () => {
       {/* ── Main Floating Action Button (FAB) ── */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative group w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white shadow-2xl hover:shadow-3xl transition-all duration-300 active:scale-90"
+        className={`pointer-events-auto relative group w-14 h-14 sm:w-16 sm:h-16 rounded-full items-center justify-center text-white shadow-2xl hover:shadow-3xl transition-all duration-300 active:scale-90 ${
+          isOpen ? 'hidden sm:flex' : 'flex'
+        }`}
         style={{
           background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
           border: '2px solid #C5A56A',
