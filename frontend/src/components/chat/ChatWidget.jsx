@@ -93,6 +93,17 @@ const ChatWidget = () => {
     }
   }, [isOpen]);
 
+  // Handle ESC key to exit
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
   if (isAdminRoute) {
     return null;
   }
@@ -198,53 +209,36 @@ const ChatWidget = () => {
   };
 
   return (
-    <aside
-      aria-label="مساعد حَبّة الذكي"
-      className={`fixed z-50 font-body ${
-        isOpen
-          ? 'inset-0 sm:inset-auto sm:bottom-6 sm:right-6 pointer-events-none'
-          : 'bottom-4 right-4 sm:bottom-6 sm:right-6'
-      }`}
-      style={{ direction: 'rtl' }}
-    >
-      {/* ── Teaser Floating Tooltip on First Load ── */}
-      {showTeaser && !isOpen && (
+    <>
+      {/* ── Soft Dimmed Backdrop Overlay (tap outside to close) ── */}
+      {isOpen && (
         <div
-          role="status"
-          aria-live="polite"
-          onClick={() => setIsOpen(true)}
-          className="cursor-pointer absolute bottom-16 right-0 mb-2 w-[calc(100vw-2.5rem)] max-w-xs sm:w-72 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-[#E8C7B8] text-right text-xs transition-all duration-300 hover:scale-[1.02] active:scale-95 animate-bounce-subtle"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[9990] transition-opacity duration-300 animate-fadeIn cursor-pointer"
+          title="اضغطي هنا للإغلاق والرجوع للمتجر"
+          aria-label="إغلاق المحادثة والرجوع للمتجر"
+        />
+      )}
+
+      {/* ── Mobile Top Quick Dismiss Pill (above sheet) ── */}
+      {isOpen && (
+        <button
+          onClick={() => setIsOpen(false)}
+          className="sm:hidden fixed top-3 left-1/2 -translate-x-1/2 z-[9996] flex items-center gap-1.5 bg-[#542A3A] text-[#F7F1E8] px-4 py-1.5 rounded-full text-xs font-semibold shadow-2xl border border-[#C5A56A]/60 active:scale-95 transition-all cursor-pointer"
+          aria-label="إغلاق المحادثة والرجوع للمتجر"
         >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowTeaser(false);
-            }}
-            className="absolute top-2 left-2 text-warm-400 hover:text-warm-700 p-1 rounded-full hover:bg-warm-100 transition-colors"
-            aria-label="إغلاق التنبيه"
-          >
-            <FiX className="h-3.5 w-3.5" />
-          </button>
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#542A3A] text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-[#C5A56A]/50">
-              <span className="text-base">✨</span>
-            </div>
-            <div className="flex-1 min-w-0 pr-0.5">
-              <p className="font-heading font-semibold text-sm text-[#542A3A] mb-0.5">
-                مساعد حَبّة الذكي
-              </p>
-              <p className="text-warm-600 leading-relaxed text-[12px]">
-                محتاجة تسألي عن أسعار الشنط أو طلب تفصيل خاص؟ أنا هنا لمساعدتكِ!
-              </p>
-            </div>
-          </div>
-        </div>
+          <span>إغلاق المحادثة والرجوع للمتجر</span>
+          <FiX className="w-4 h-4 text-[#C5A56A]" />
+        </button>
       )}
 
       {/* ── Chat Window (Ultra Responsive for Mobile & Desktop) ── */}
       {isOpen && (
         <div
-          className="pointer-events-auto fixed inset-0 sm:inset-auto sm:bottom-20 sm:right-0 w-full sm:w-[410px] h-[100dvh] sm:h-[620px] sm:max-h-[85vh] flex flex-col bg-[#F7F1E8] sm:rounded-3xl shadow-2xl border-0 sm:border sm:border-[#E8C7B8]/90 overflow-hidden transition-all duration-300 animate-fadeIn"
+          className="fixed z-[9995] flex flex-col bg-[#F7F1E8] shadow-2xl overflow-hidden transition-all duration-300 font-body
+            inset-x-2.5 bottom-2.5 top-12 rounded-3xl border border-[#E8C7B8]
+            sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[420px] sm:h-[630px] sm:max-h-[85vh] sm:rounded-3xl animate-fadeIn"
+          style={{ direction: 'rtl' }}
         >
           {/* ── Header ── */}
           <div
@@ -252,21 +246,10 @@ const ChatWidget = () => {
             style={{
               background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
               borderBottom: '1px solid rgba(197, 165, 106, 0.35)',
-              paddingTop: 'max(0.75rem, env(safe-area-inset-top))',
             }}
           >
-            {/* Brand identity & Back/Close button */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Back / Close button for mobile (RTL back arrow) */}
-              <button
-                onClick={() => setIsOpen(false)}
-                className="sm:hidden p-2 -mr-1 text-[#E8C7B8] hover:text-white active:bg-white/20 active:scale-95 rounded-full transition-colors flex items-center justify-center"
-                title="الرجوع وإغلاق"
-                aria-label="الرجوع وإغلاق المحادثة"
-              >
-                <FiArrowRight className="h-5 w-5" />
-              </button>
-
+            {/* Brand identity */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="relative flex-shrink-0">
                 <img
                   src="/logo-mark.png"
@@ -294,22 +277,23 @@ const ChatWidget = () => {
               </div>
             </div>
 
-            {/* Header Actions: New Chat + Desktop Close */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Header Actions: New Chat + PROMINENT CLOSE (X) BUTTON ON ALL DEVICES */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleNewChat}
-                className="flex items-center gap-1.5 text-xs bg-white/15 hover:bg-white/25 active:scale-95 text-[#F7F1E8] px-2.5 sm:px-3 py-1.5 rounded-full border border-white/20 transition-all font-body shadow-xs"
+                className="flex items-center gap-1 text-xs bg-white/15 hover:bg-white/25 active:scale-95 text-[#F7F1E8] px-2.5 sm:px-3 py-1.5 rounded-full border border-white/20 transition-all font-body shadow-xs"
                 title="بدء محادثة جديدة"
               >
                 <FiRotateCcw className="w-3.5 h-3.5" />
                 <span className="text-[11px] sm:text-xs font-medium">محادثة جديدة</span>
               </button>
 
+              {/* CLEAR (X) CLOSE BUTTON — Always visible & easy to tap */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="hidden sm:flex p-1.5 text-[#E8C7B8] hover:text-white hover:bg-white/15 active:scale-95 rounded-full transition-colors"
-                title="إغلاق الدردشة"
-                aria-label="إغلاق"
+                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[#F7F1E8] hover:text-white bg-white/20 hover:bg-white/30 active:scale-90 rounded-full transition-all border border-white/30 shadow-xs cursor-pointer"
+                title="إغلاق الدردشة والرجوع للمتجر"
+                aria-label="إغلاق الدردشة"
               >
                 <FiX className="h-5 w-5" />
               </button>
@@ -516,30 +500,71 @@ const ChatWidget = () => {
       )}
 
       {/* ── Main Floating Action Button (FAB) ── */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`pointer-events-auto relative group w-14 h-14 sm:w-16 sm:h-16 rounded-full items-center justify-center text-white shadow-2xl hover:shadow-3xl transition-all duration-300 active:scale-90 ${
-          isOpen ? 'hidden sm:flex' : 'flex'
-        }`}
-        style={{
-          background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
-          border: '2px solid #C5A56A',
-        }}
-        aria-label={isOpen ? 'إغلاق المساعد' : 'فتح المساعد الذكي'}
+      <aside
+        aria-label="زر المساعد الذكي"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9980] font-body"
+        style={{ direction: 'rtl' }}
       >
-        {isOpen ? (
-          <FiX className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:rotate-90" />
-        ) : (
-          <>
-            <FiMessageCircle className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:scale-110" />
-            {hasUnread && (
-              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-rose-500 border-2 border-[#542A3A] rounded-full animate-ping"></span>
-            )}
-            <span className="absolute top-1 right-1 w-3 h-3 bg-amber-400 border-2 border-[#542A3A] rounded-full shadow-sm"></span>
-          </>
+        {/* Teaser Floating Tooltip */}
+        {showTeaser && !isOpen && (
+          <div
+            role="status"
+            aria-live="polite"
+            onClick={() => setIsOpen(true)}
+            className="cursor-pointer absolute bottom-16 right-0 mb-2 w-[calc(100vw-2.5rem)] max-w-xs sm:w-72 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-[#E8C7B8] text-right text-xs transition-all duration-300 hover:scale-[1.02] active:scale-95 animate-bounce-subtle"
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowTeaser(false);
+              }}
+              className="absolute top-2 left-2 text-warm-400 hover:text-warm-700 p-1 rounded-full hover:bg-warm-100 transition-colors"
+              aria-label="إغلاق التنبيه"
+            >
+              <FiX className="h-3.5 w-3.5" />
+            </button>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#542A3A] text-white flex items-center justify-center flex-shrink-0 shadow-sm border border-[#C5A56A]/50">
+                <span className="text-base">✨</span>
+              </div>
+              <div className="flex-1 min-w-0 pr-0.5">
+                <p className="font-heading font-semibold text-sm text-[#542A3A] mb-0.5">
+                  مساعد حَبّة الذكي
+                </p>
+                <p className="text-warm-600 leading-relaxed text-[12px]">
+                  محتاجة تسألي عن أسعار الشنط أو طلب تفصيل خاص؟ أنا هنا لمساعدتكِ!
+                </p>
+              </div>
+            </div>
+          </div>
         )}
-      </button>
-    </aside>
+
+        {/* The Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`relative group w-14 h-14 sm:w-16 sm:h-16 rounded-full items-center justify-center text-white shadow-2xl hover:shadow-3xl transition-all duration-300 active:scale-90 ${
+            isOpen ? 'hidden sm:flex' : 'flex'
+          }`}
+          style={{
+            background: 'linear-gradient(135deg, #542A3A 0%, #3e1b29 100%)',
+            border: '2px solid #C5A56A',
+          }}
+          aria-label={isOpen ? 'إغلاق المساعد' : 'فتح المساعد الذكي'}
+        >
+          {isOpen ? (
+            <FiX className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:rotate-90" />
+          ) : (
+            <>
+              <FiMessageCircle className="h-7 w-7 sm:h-8 sm:w-8 transition-transform group-hover:scale-110" />
+              {hasUnread && (
+                <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-rose-500 border-2 border-[#542A3A] rounded-full animate-ping"></span>
+              )}
+              <span className="absolute top-1 right-1 w-3 h-3 bg-amber-400 border-2 border-[#542A3A] rounded-full shadow-sm"></span>
+            </>
+          )}
+        </button>
+      </aside>
+    </>
   );
 };
 
